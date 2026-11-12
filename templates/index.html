@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Panel descriptivo, predictivo y prescriptivo de registros de violencia intrafamiliar en Colombia, 2015–2024.">
+    <title>Violencia intrafamiliar | Colombia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-mark" aria-hidden="true">V</span>
+        <span>Observatorio <strong>VIF</strong></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <a href="#descriptivo">Descriptivo</a>
+        <a href="#predictivo">Predictivo</a>
+        <a href="#prescriptivo">Prescriptivo</a>
+      </nav>
+      <span class="source-tag"><span></span> Datos abiertos · Colombia</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">ANALÍTICA PARA LA ACCIÓN</p>
+          <h1>Violencia intrafamiliar<br><span>en Colombia</span></h1>
+          <p class="hero-description">
+            Una mirada a los registros de lesiones no fatales para reconocer patrones,
+            entender sus límites y orientar preguntas de prevención.
+          </p>
+          <a class="hero-link" href="#descriptivo">Explorar el análisis <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="hero-core"><span>2015</span><i>—</i><span>2024</span></div>
+          <span class="art-dot dot-one"></span><span class="art-dot dot-two"></span>
+          <span class="art-dot dot-three"></span>
+          <span class="art-label">ANÁLISIS<br>DE DATOS</span>
+        </div>
+      </section>
+
+      <section class="filter-panel" aria-label="Filtros del análisis">
+        <div>
+          <p class="eyebrow">EXPLORA LOS REGISTROS</p>
+          <h2>Filtros</h2>
+        </div>
+        <form method="get" action="{{ url_for('index') }}">
+          <label>
+            <span>Año del hecho</span>
+            <select name="year">
+              <option value="all" {% if selected_year == "all" %}selected{% endif %}>Todos los años</option>
+              {% for year in years %}
+              <option value="{{ year }}" {% if selected_year == year|string %}selected{% endif %}>{{ year }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>
+            <span>Departamento</span>
+            <select name="department">
+              <option value="all" {% if selected_department == "all" %}selected{% endif %}>Todos los departamentos</option>
+              {% for department in departments %}
+              <option value="{{ department }}" {% if selected_department == department %}selected{% endif %}>{{ department }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button type="submit">Aplicar filtros <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section id="descriptivo" class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 · ¿QUÉ OBSERVAMOS?</p>
+            <h2>Panorama descriptivo</h2>
+          </div>
+          <p>Registros incluidos: {{ year_range }}. Los conteos describen reportes, no tasas de incidencia.</p>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card">
+            <span class="metric-icon blue">▤</span>
+            <p>Registros analizados</p>
+            <strong>{{ "{:,}".format(total).replace(",", ".") }}</strong>
+            <small>Con los filtros seleccionados</small>
+          </article>
+          <article class="metric-card">
+            <span class="metric-icon rose">◌</span>
+            <p>Víctimas mujeres</p>
+            <strong>{{ "%.1f"|format(women_share) }}<small class="unit">%</small></strong>
+            <small>Participación en los registros filtrados</small>
+          </article>
+          <article class="metric-card">
+            <span class="metric-icon amber">⌂</span>
+            <p>Escenario más frecuente</p>
+            <strong class="metric-text">{{ leading_scene }}</strong>
+            <small>En los registros filtrados</small>
+          </article>
+          <article class="metric-card note-card">
+            <span class="metric-icon green">i</span>
+            <p>Cómo leer estas cifras</p>
+            <strong class="metric-text">Registros, no prevalencia</strong>
+            <small>La cobertura y el subregistro pueden variar por territorio y año.</small>
+          </article>
+        </div>
+
+        <div class="chart-grid">
+          <article class="chart-card chart-wide">
+            <div class="card-heading"><div><h3>Evolución anual</h3><p>El filtro territorial se aplica; el filtro de año no oculta la serie. El descenso de 2020 requiere contexto.</p></div><span class="chart-index">01</span></div>
+            <div id="annual-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Registros por sexo</h3><p>Distribución en la selección actual.</p></div><span class="chart-index">02</span></div>
+            <div id="sex-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Escenarios más frecuentes</h3><p>Las etiquetas equivalentes se agrupan.</p></div><span class="chart-index">03</span></div>
+            <div id="scenes-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Departamentos</h3><p>Top 10 en el año seleccionado o en todo el periodo.</p></div><span class="chart-index">04</span></div>
+            <div id="departments-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Factores desencadenantes registrados</h3><p>Frecuencias; no implican causalidad.</p></div><span class="chart-index">05</span></div>
+            <div id="triggers-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Edad y sexo</h3><p>Grupos de edad con más registros en la selección.</p></div><span class="chart-index">06</span></div>
+            <div id="age-sex-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Registros por mes</h3><p>Distribución a lo largo del año.</p></div><span class="chart-index">07</span></div>
+            <div id="months-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Registros por día</h3><p>Ordenados de lunes a domingo.</p></div><span class="chart-index">08</span></div>
+            <div id="weekdays-chart" class="chart"></div>
+          </article>
+          <article class="chart-card">
+            <div class="card-heading"><div><h3>Rango horario</h3><p>Hora referida en los registros disponibles.</p></div><span class="chart-index">09</span></div>
+            <div id="hours-chart" class="chart"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="predictivo" class="section-block tinted-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 · ¿QUÉ PODEMOS ESTIMAR?</p>
+            <h2>Desempeño del análisis predictivo</h2>
+          </div>
+          <p>Resultados reportados en el notebook: clasificación del escenario registrado a partir de otras variables del mismo registro.</p>
+        </div>
+        <div class="model-layout">
+          <article class="chart-card model-chart-card">
+            <div class="card-heading"><div><h3>Comparación de modelos</h3><p>Exactitud, exactitud balanceada y F1 macro.</p></div><span class="chart-index">10</span></div>
+            <div id="model-chart" class="chart"></div>
+          </article>
+          <aside class="model-notes">
+            <div class="note-heading"><span class="metric-icon violet">↗</span><p>Lectura importante</p></div>
+            <h3>La exactitud sola puede engañar.</h3>
+            <p>El modelo base alcanza 75,7% de exactitud porque la categoría “Vivienda” concentra cerca de tres cuartas partes de la muestra. Su F1 macro es solo 3,3%.</p>
+            <p>La regresión logística mejora el F1 macro a 10,4%, pero el desempeño por clase sigue siendo limitado. No es una herramienta para anticipar riesgo individual ni para tomar decisiones sobre personas.</p>
+            <div class="model-caveat"><strong>Alcance</strong><span>Evaluación retrospectiva sobre una partición de prueba de 24.000 registros, según el notebook.</span></div>
+          </aside>
+        </div>
+        <div class="metrics-table-wrap">
+          <table>
+            <thead><tr><th>Modelo</th><th>Exactitud</th><th>Exactitud balanceada</th><th>F1 macro</th></tr></thead>
+            <tbody>
+              {% for metric in model_metrics %}
+              <tr><td>{{ metric.name }}</td><td>{{ "%.2f"|format(metric.accuracy * 100) }}%</td><td>{{ "%.2f"|format(metric.balanced_accuracy * 100) }}%</td><td>{{ "%.2f"|format(metric.f1_macro * 100) }}%</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="prescriptivo" class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">03 · ¿DÓNDE ENFOCAR LA ATENCIÓN?</p>
+            <h2>Priorización territorial</h2>
+          </div>
+          <p>Comparación de volumen registrado entre {{ previous_year }} y {{ focus_year }}. Ordenar por conteos no equivale a ordenar por riesgo.</p>
+        </div>
+        <div class="priority-layout">
+          <article class="chart-card priority-card">
+            <div class="card-heading"><div><h3>Departamentos con más registros</h3><p>Variación interanual y participación del año {{ focus_year }}.</p></div><span class="chart-index">11</span></div>
+            <div class="table-scroll">
+              <table class="priority-table">
+                <thead><tr><th>Departamento</th><th>{{ focus_year }}</th><th>{{ previous_year }}</th><th>Variación</th><th>Participación</th><th>Lectura</th></tr></thead>
+                <tbody>
+                  {% for row in priorities %}
+                  <tr>
+                    <td>{{ row.department }}</td>
+                    <td>{{ "{:,}".format(row.count).replace(",", ".") }}</td>
+                    <td>{{ "{:,}".format(row.previous_count).replace(",", ".") }}</td>
+                    <td>{% if row.variation is not none %}{{ "%+.1f"|format(row.variation) }}%{% else %}N/D{% endif %}</td>
+                    <td>{{ "%.1f"|format(row.share) }}%</td>
+                    <td><span class="priority-tag">{{ row.attention }}</span></td>
+                  </tr>
+                  {% else %}
+                  <tr><td colspan="6">No hay registros para comparar en este periodo.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <aside class="action-card">
+            <p class="eyebrow">PARA LA TOMA DE DECISIONES</p>
+            <h3>De los datos a preguntas de intervención</h3>
+            <ul>
+              <li>Contrastar los territorios de mayor volumen con capacidad y cobertura de atención.</li>
+              <li>Investigar aumentos o descensos con fuentes locales antes de atribuirles una causa.</li>
+              <li>Diseñar acciones diferenciadas por contexto, edad y escenario, junto con equipos territoriales.</li>
+              <li>Dar seguimiento a cobertura, tiempos de atención y remisiones efectivas.</li>
+            </ul>
+            <p class="action-caveat">Las prioridades son una guía exploratoria. No ajustan por población, acceso a servicios ni nivel de denuncia.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="source-note">
+        <div><span class="source-symbol">↗</span><div><h3>Fuente y limitaciones</h3><p>Dataset de violencia intrafamiliar en Colombia, 2015–2024. Los registros representan lesiones no fatales reportadas. Puede haber subregistro, diferencias de cobertura y cambios en la clasificación. Las comparaciones no demuestran causalidad.</p></div></div>
+        <span class="source-period">COLOMBIA · {{ year_range }}</span>
+      </section>
+    </main>
+
+    <footer><span>Observatorio VIF</span><span>Analítica descriptiva · predictiva · prescriptiva</span></footer>
+
+    <script>
+      const figures = {{ figures|tojson }};
+      const config = {responsive: true, displayModeBar: false};
+      const chartIds = {
+        annual: "annual-chart",
+        sex: "sex-chart",
+        scenes: "scenes-chart",
+        departments: "departments-chart",
+        triggers: "triggers-chart",
+        age_sex: "age-sex-chart",
+        months: "months-chart",
+        weekdays: "weekdays-chart",
+        hours: "hours-chart"
+      };
+      for (const [name, id] of Object.entries(chartIds)) {
+        Plotly.newPlot(id, figures[name].data, figures[name].layout, config);
+      }
+      const modelMetrics = {{ model_metrics|tojson }};
+      const modelChart = {
+        data: [
+          {name: "Exactitud", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.accuracy * 100), type: "bar", marker: {color: "#aeb9ca"}},
+          {name: "Exactitud balanceada", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.balanced_accuracy * 100), type: "bar", marker: {color: "#58a69a"}},
+          {name: "F1 macro", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.f1_macro * 100), type: "bar", marker: {color: "#765be7"}}
+        ],
+        layout: {
+          barmode: "group",
+          template: "plotly_white",
+          height: 340,
+          margin: {l: 38, r: 12, t: 15, b: 55},
+          yaxis: {range: [0, 100], ticksuffix: "%", gridcolor: "#edf0f5"},
+          xaxis: {tickangle: -12},
+          legend: {orientation: "h", y: 1.16, x: 0},
+          font: {family: "Inter, Segoe UI, sans-serif", color: "#3f4b60"},
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)"
+        }
+      };
+      Plotly.newPlot("model-chart", modelChart.data, modelChart.layout, config);
+    </script>
+  </body>
+</html>

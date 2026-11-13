@@ -79,6 +79,230 @@ WEEKDAY_ORDER = [
     "Domingo",
 ]
 
+# Diccionario de etiquetas: clave normalizada -> (etiqueta corta, etiqueta completa).
+# Las gráficas usan la etiqueta corta y el texto completo aparece en el hover.
+LABEL_DICTIONARY = {
+    "sex": {
+        "mujer": ("Mujer", "Mujer"),
+        "hombre": ("Hombre", "Hombre"),
+        "sin informacion": ("Sin información", "Sin información"),
+    },
+    "age_group": {
+        "00 a 04": ("0–4", "(00 a 04)"),
+        "05 a 09": ("5–9", "(05 a 09)"),
+        "10 a 14": ("10–14", "(10 a 14)"),
+        "15 a 17": ("15–17", "(15 a 17)"),
+        "18 a 19": ("18–19", "(18 a 19)"),
+        "20 a 24": ("20–24", "(20 a 24)"),
+        "25 a 29": ("25–29", "(25 a 29)"),
+        "30 a 34": ("30–34", "(30 a 34)"),
+        "35 a 39": ("35–39", "(35 a 39)"),
+        "40 a 44": ("40–44", "(40 a 44)"),
+        "45 a 49": ("45–49", "(45 a 49)"),
+        "50 a 54": ("50–54", "(50 a 54)"),
+        "55 a 59": ("55–59", "(55 a 59)"),
+        "60 a 64": ("60–64", "(60 a 64)"),
+        "65 a 69": ("65–69", "(65 a 69)"),
+        "70 a 74": ("70–74", "(70 a 74)"),
+        "75 a 79": ("75–79", "(75 a 79)"),
+        "80 y mas": ("80+", "(80 y más)"),
+        "sin informacion": ("Sin información", "Sin información"),
+    },
+    "month": {
+        "enero": ("Ene", "Enero"),
+        "febrero": ("Feb", "Febrero"),
+        "marzo": ("Mar", "Marzo"),
+        "abril": ("Abr", "Abril"),
+        "mayo": ("May", "Mayo"),
+        "junio": ("Jun", "Junio"),
+        "julio": ("Jul", "Julio"),
+        "agosto": ("Ago", "Agosto"),
+        "septiembre": ("Sep", "Septiembre"),
+        "octubre": ("Oct", "Octubre"),
+        "noviembre": ("Nov", "Noviembre"),
+        "diciembre": ("Dic", "Diciembre"),
+    },
+    "weekday": {
+        "lunes": ("Lun", "Lunes"),
+        "martes": ("Mar", "Martes"),
+        "miercoles": ("Mié", "Miércoles"),
+        "jueves": ("Jue", "Jueves"),
+        "viernes": ("Vie", "Viernes"),
+        "sabado": ("Sáb", "Sábado"),
+        "domingo": ("Dom", "Domingo"),
+    },
+    "time_range": {
+        "00 00 a 02 59": ("00–03", "(00:00 a 02:59)"),
+        "03 00 a 05 59": ("03–06", "(03:00 a 05:59)"),
+        "06 00 a 08 59": ("06–09", "(06:00 a 08:59)"),
+        "09 00 a 11 59": ("09–12", "(09:00 a 11:59)"),
+        "12 00 a 14 59": ("12–15", "(12:00 a 14:59)"),
+        "15 00 a 17 59": ("15–18", "(15:00 a 17:59)"),
+        "18 00 a 20 59": ("18–21", "(18:00 a 20:59)"),
+        "21 00 a 23 59": ("21–24", "(21:00 a 23:59)"),
+        "sin informacion": ("Sin hora", "Sin información"),
+    },
+    "department": {
+        "amazonas": ("Amazonas", "Amazonas"),
+        "antioquia": ("Antioquia", "Antioquia"),
+        "arauca": ("Arauca", "Arauca"),
+        "atlantico": ("Atlántico", "Atlántico"),
+        "bogota d c": ("Bogotá D.C.", "Bogotá, D.C."),
+        "bolivar": ("Bolívar", "Bolívar"),
+        "boyaca": ("Boyacá", "Boyacá"),
+        "caldas": ("Caldas", "Caldas"),
+        "caqueta": ("Caquetá", "Caquetá"),
+        "casanare": ("Casanare", "Casanare"),
+        "cauca": ("Cauca", "Cauca"),
+        "cesar": ("Cesar", "Cesar"),
+        "choco": ("Chocó", "Chocó"),
+        "cordoba": ("Córdoba", "Córdoba"),
+        "cundinamarca": ("Cundinamarca", "Cundinamarca"),
+        "guainia": ("Guainía", "Guainía"),
+        "guaviare": ("Guaviare", "Guaviare"),
+        "huila": ("Huila", "Huila"),
+        "la guajira": ("La Guajira", "La Guajira"),
+        "magdalena": ("Magdalena", "Magdalena"),
+        "meta": ("Meta", "Meta"),
+        "narino": ("Nariño", "Nariño"),
+        "norte de santander": ("Norte de Santander", "Norte de Santander"),
+        "putumayo": ("Putumayo", "Putumayo"),
+        "quindio": ("Quindío", "Quindío"),
+        "risaralda": ("Risaralda", "Risaralda"),
+        "santander": ("Santander", "Santander"),
+        "sucre": ("Sucre", "Sucre"),
+        "tolima": ("Tolima", "Tolima"),
+        "valle del cauca": ("Valle del Cauca", "Valle del Cauca"),
+        "vaupes": ("Vaupés", "Vaupés"),
+        "vichada": ("Vichada", "Vichada"),
+        "archipielago de san andres providencia y santa catalina": (
+            "San Andrés y Providencia",
+            "Archipiélago de San Andrés, Providencia y Santa Catalina",
+        ),
+        "sin informacion": ("Sin información", "Sin información"),
+    },
+    "scene": {
+        "vivienda": ("Vivienda", "Vivienda"),
+        "calle autopista avenida dentro de la ciudad": (
+            "Calle / vía urbana",
+            "Calle (autopista, avenida, dentro de la ciudad)",
+        ),
+        "via publica": ("Vía pública", "Vía pública"),
+        "sin informacion": ("Sin información", "Sin información"),
+        "lugares de hospedaje hoteles campamentos y otros tipos de hospedaje no permanente moteles etc": (
+            "Hospedaje",
+            "Lugares de hospedaje (hoteles, campamentos, moteles, etc.)",
+        ),
+        "establecimiento comercial": (
+            "Comercio",
+            "Establecimiento comercial (tienda, centro comercial, almacén, plaza de mercado)",
+        ),
+        "areas deportivas y o recreativas": ("Áreas deportivas", "Áreas deportivas y/o recreativas"),
+        "lugares de esparcimiento con expendio de alcohol": (
+            "Esparcimiento",
+            "Lugares de esparcimiento con expendio de alcohol",
+        ),
+        "carretera fuera de la ciudad": ("Carretera", "Carretera (fuera de la ciudad)"),
+        "centros educativos": ("Centros educativos", "Centros educativos"),
+        "otros": ("Otros", "Otros"),
+        "espacios terrestres al aire libre bosque potrero montana playa etc": (
+            "Aire libre",
+            "Espacios terrestres al aire libre (bosque, potrero, montaña, playa, etc.)",
+        ),
+        "centro de atencion medica hospital clinica consultorio etc": (
+            "Centro médico",
+            "Centro de atención médica (hospital, clínica, consultorio, etc.)",
+        ),
+        "zonas de actividades agropecuarias": ("Zonas agropecuarias", "Zonas de actividades agropecuarias"),
+        "establecimientos de expendio de comidas restaurantes asaderos salsamentarias etc": (
+            "Restaurantes",
+            "Establecimientos de expendio de comidas (restaurantes, asaderos, etc.)",
+        ),
+        "oficinas y o edificios de oficinas": ("Oficinas", "Oficinas y/o edificios de oficinas"),
+        "lugares de cuidado de personas hospicios orfelinatos hogares geriatricos etc": (
+            "Cuidado de personas",
+            "Lugares de cuidado de personas (hospicios, orfelinatos, hogares geriátricos, etc.)",
+        ),
+        "lugares de actividades culturales cines teatros museos bibliotecas etc": (
+            "Lugares culturales",
+            "Lugares de actividades culturales (cines, teatros, museos, bibliotecas, etc.)",
+        ),
+        "parqueaderos estacionamientos": ("Parqueaderos", "Parqueaderos, estacionamientos"),
+        "centros de reclusion": ("Centros de reclusión", "Centros de reclusión"),
+        "vehiculo particular": ("Vehículo particular", "Vehículo de servicio particular"),
+        "establecimientos dedicados a la administracion publica cortes juzgados ministerios etc": (
+            "Administración pública",
+            "Establecimientos dedicados a la administración pública (cortes, juzgados, ministerios, etc.)",
+        ),
+        "establecimiento industrial fabrica planta y o obras en construccion": (
+            "Industrial / obra",
+            "Establecimiento industrial (fábrica, planta) y/o obras en construcción",
+        ),
+        "sitio de culto capilla iglesia templo etc": ("Sitio de culto", "Sitio de culto (capilla, iglesia, templo, etc.)"),
+        "taller": ("Taller", "Taller"),
+        "guarniciones militares y o de policia": ("Guarniciones", "Guarniciones militares y/o de policía"),
+        "terminales de pasajeros": ("Terminales", "Terminales de pasajeros"),
+        "terreno baldio": ("Terreno baldío", "Terreno baldío"),
+        "espacios acuaticos al aire libre mar rio arroyo humedal lago etc": (
+            "Espacios acuáticos",
+            "Espacios acuáticos al aire libre (mar, río, arroyo, humedal, lago, etc.)",
+        ),
+        "estaciones de servicio bombas de gasolina": ("Estaciones de servicio", "Estaciones de servicio (bombas de gasolina)"),
+        "vehiculo de transporte": ("Vehículo de transporte", "Vehículo de transporte"),
+        "piscina y jacuzzi establecimientos turisticos recreativos deportivos": (
+            "Piscina / turismo",
+            "Piscina y jacuzzi (establecimientos turísticos, recreativos, deportivos)",
+        ),
+        "ambulancia transporte sanitario": ("Ambulancia", "Ambulancia - transporte sanitario"),
+        "establecimientos financieros y relacionados bancos fiduciarias etc": (
+            "Financiero",
+            "Establecimientos financieros y relacionados (bancos, fiduciarias, etc.)",
+        ),
+        "transporte masivo": ("Transporte masivo", "Transporte masivo"),
+        "piscina y jacuzzi vivienda": ("Piscina (vivienda)", "Piscina y jacuzzi (vivienda)"),
+    },
+    "trigger": {
+        "intolerancia machismo": ("Intolerancia / machismo", "Intolerancia, machismo"),
+        "consumo de alcohol y o sustancias psicoactivas": (
+            "Alcohol / SPA",
+            "Consumo de alcohol y/o sustancias psicoactivas; incluye alcoholismo y drogadicción",
+        ),
+        "sin informacion": ("Sin información", "Sin información"),
+        "celos desconfianza infidelidad": ("Celos / infidelidad", "Celos, desconfianza, infidelidad"),
+        "economicas": ("Económicas", "Económicas"),
+        "otras": ("Otras", "Otras razones / otras"),
+        "abandono": ("Abandono", "Abandono"),
+        "enfermedad fisica o mental": ("Enfermedad", "Enfermedad física o mental"),
+        "desamor": ("Desamor", "Desamor"),
+    },
+}
+
+# Sinónimos que deben sumarse en una sola categoría antes de graficar.
+CATEGORY_ALIASES = {
+    "scene": {
+        "establecimiento comercial tienda centro comercial almacen plaza de mercado": "establecimiento comercial",
+        "establecimiento comercial tienda centro comercial almacen": "establecimiento comercial",
+        "establecimiento comercial plaza de mercado galeria": "establecimiento comercial",
+        "vehiculo servicio particular": "vehiculo particular",
+        "vehiculo de servicio particular": "vehiculo particular",
+    },
+    "trigger": {
+        "alcoholismo drogadiccion": "consumo de alcohol y o sustancias psicoactivas",
+        "otras razones": "otras",
+    },
+}
+
+LABEL_FIELD_NAMES = [
+    ("department", "Departamento"),
+    ("scene", "Escenario"),
+    ("trigger", "Factor desencadenante"),
+    ("age_group", "Grupo de edad"),
+    ("time_range", "Rango horario"),
+    ("month", "Mes"),
+    ("weekday", "Día"),
+    ("sex", "Sexo"),
+]
+
 
 def _data_path():
     configured_path = os.environ.get("DATA_PATH")
@@ -127,21 +351,67 @@ def load_data():
 def normalize_category(value):
     text = unicodedata.normalize("NFKD", str(value))
     text = "".join(char for char in text if not unicodedata.combining(char))
-    return " ".join(text.casefold().split())
+    text = re.sub(r"[^a-z0-9]+", " ", text.casefold())
+    return " ".join(text.split())
 
 
-def category_counts(series, limit=10):
+def canonical_key(field, value):
+    key = normalize_category(value)
+    return CATEGORY_ALIASES.get(field, {}).get(key, key)
+
+
+def _fallback_label(raw):
+    text = " ".join(str(raw).split())
+    short = re.sub(r"\s*\([^)]*\)", "", text).strip() or text
+    if len(short) > 28:
+        short = short[:27].rsplit(" ", 1)[0].rstrip(",;:") + "…"
+    return short, text
+
+
+def label_for(field, key, raw):
+    entry = LABEL_DICTIONARY.get(field, {}).get(key)
+    if entry:
+        return entry
+    return _fallback_label(raw)
+
+
+@lru_cache(maxsize=8192)
+def category_label(field, value):
+    key = canonical_key(field, value)
+    return label_for(field, key, value)
+
+
+@lru_cache(maxsize=256)
+def department_full(value):
+    return category_label("department", value)[1]
+
+
+def category_counts(series, limit=10, field=None):
+    field = field or series.name
     labels = series.fillna("Sin información").astype(str).str.strip()
     labels = labels.replace("", "Sin información")
-    keys = labels.map(normalize_category)
-    display_names = labels.groupby(keys, sort=False).first()
+    keys = labels.map(lambda value: canonical_key(field, value))
     counts = keys.value_counts().head(limit)
-    return pd.DataFrame(
-        {
-            "label": display_names.reindex(counts.index).to_numpy(),
-            "count": counts.to_numpy(),
-        }
-    )
+    raw_by_key = labels.groupby(keys, sort=False).first()
+    rows = []
+    for key, count in counts.items():
+        short, full = label_for(field, key, raw_by_key.get(key, key))
+        rows.append({"label": short, "full": full, "count": int(count)})
+    return pd.DataFrame(rows, columns=["label", "full", "count"])
+
+
+def _pct(part, total):
+    return (part / total * 100) if total else 0.0
+
+
+def _pct_text(value, digits=1):
+    return f"{float(value):.{digits}f}".replace(".", ",")
+
+
+def _age_position(label):
+    match = re.search(r"\((\d{2}) a (\d{2})\)", str(label))
+    return int(match.group(1)) if match else 999
+
 
 
 def _layout(data, height=340):
@@ -150,53 +420,86 @@ def _layout(data, height=340):
         "layout": {
             "template": "plotly_white",
             "height": height,
-            "margin": {"l": 12, "r": 12, "t": 30, "b": 20},
-            "font": {"family": "Inter, Segoe UI, sans-serif", "color": "#3f4b60"},
+            "margin": {"l": 10, "r": 16, "t": 30, "b": 20},
+            "font": {"family": "Inter, Segoe UI, sans-serif", "color": "#3f4b60", "size": 11},
+            "separators": ",.",
             "paper_bgcolor": "rgba(0,0,0,0)",
             "plot_bgcolor": "rgba(0,0,0,0)",
-            "hoverlabel": {"bgcolor": "#14243a", "font": {"color": "#ffffff"}},
+            "hoverlabel": {"bgcolor": "#14243a", "font": {"color": "#ffffff", "size": 11}},
         },
     }
 
 
 def _bar_chart(counts, color="#4767e8", horizontal=False):
+    full = counts["full"].astype(str).tolist()
+    totals = counts["count"].astype(int).tolist()
+    labels = counts["label"].astype(str).tolist()
+
     if horizontal:
         chart = _layout(
             [
                 {
                     "type": "bar",
-                    "x": counts["count"].astype(int).tolist(),
-                    "y": counts["label"].astype(str).tolist(),
+                    "x": totals,
+                    "y": labels,
+                    "customdata": full,
                     "orientation": "h",
                     "marker": {"color": color},
-                    "hovertemplate": "%{y}<br>%{x:,} registros<extra></extra>",
+                    "text": [f"{value:,}".replace(",", ".") for value in totals],
+                    "textposition": "auto",
+                    "insidetextanchor": "end",
+                    "textfont": {"size": 10},
+                    "hovertemplate": "%{customdata}<br>%{x:,} registros<extra></extra>",
                 }
             ]
         )
-        chart["layout"]["yaxis"] = {"autorange": "reversed"}
-        chart["layout"]["xaxis"] = {"title": None, "gridcolor": "#edf0f5"}
+        chart["layout"]["yaxis"] = {
+            "autorange": "reversed",
+            "automargin": True,
+            "tickfont": {"size": 11},
+        }
+        chart["layout"]["xaxis"] = {
+            "title": None,
+            "gridcolor": "#edf0f5",
+            "automargin": True,
+            "tickformat": ",d",
+            "zeroline": False,
+        }
         return chart
 
     chart = _layout(
         [
             {
                 "type": "bar",
-                "x": counts["label"].astype(str).tolist(),
-                "y": counts["count"].astype(int).tolist(),
+                "x": labels,
+                "y": totals,
+                "customdata": full,
                 "marker": {"color": color},
-                "hovertemplate": "%{x}<br>%{y:,} registros<extra></extra>",
+                "hovertemplate": "%{customdata}<br>%{y:,} registros<extra></extra>",
             }
         ]
     )
-    chart["layout"]["xaxis"] = {"title": None, "tickangle": -25}
-    chart["layout"]["yaxis"] = {"title": None, "gridcolor": "#edf0f5"}
+    chart["layout"]["xaxis"] = {
+        "title": None,
+        "tickangle": 0,
+        "automargin": True,
+        "tickfont": {"size": 11},
+    }
+    chart["layout"]["yaxis"] = {
+        "title": None,
+        "gridcolor": "#edf0f5",
+        "automargin": True,
+        "tickformat": ",d",
+        "zeroline": False,
+    }
     return chart
+
 
 
 def _annual_chart(frame, department=None):
     annual = frame.dropna(subset=["year"])
     if department:
-        annual = annual[annual["department"] == department]
+        annual = annual[annual["department"].map(department_full) == department]
     counts = annual.groupby("year").size().sort_index()
     chart = _layout(
         [
@@ -213,8 +516,19 @@ def _annual_chart(frame, department=None):
             }
         ]
     )
-    chart["layout"]["xaxis"] = {"title": None, "dtick": 1, "gridcolor": "#edf0f5"}
-    chart["layout"]["yaxis"] = {"title": None, "gridcolor": "#edf0f5"}
+    chart["layout"]["xaxis"] = {
+        "title": None,
+        "dtick": 1,
+        "gridcolor": "#edf0f5",
+        "automargin": True,
+    }
+    chart["layout"]["yaxis"] = {
+        "title": None,
+        "gridcolor": "#edf0f5",
+        "automargin": True,
+        "tickformat": ",d",
+        "zeroline": False,
+    }
     return chart
 
 
@@ -226,10 +540,12 @@ def _sex_chart(frame):
                 "type": "pie",
                 "labels": counts["label"].astype(str).tolist(),
                 "values": counts["count"].astype(int).tolist(),
+                "customdata": counts["full"].astype(str).tolist(),
                 "hole": 0.66,
                 "marker": {"colors": ["#4767e8", "#e98ca8", "#a9b5c8", "#d9deea"]},
                 "textinfo": "percent",
-                "hovertemplate": "%{label}<br>%{value:,} registros<extra></extra>",
+                "textfont": {"size": 12},
+                "hovertemplate": "%{customdata}<br>%{value:,} registros (%{percent})<extra></extra>",
             }
         ],
         height=310,
@@ -238,14 +554,18 @@ def _sex_chart(frame):
 
 def _age_sex_chart(frame):
     ages = category_counts(frame["age_group"], limit=10)
-    age_keys = ages["label"].map(normalize_category).tolist()
-    all_age_keys = frame["age_group"].map(normalize_category)
-    all_sex_keys = frame["sex"].map(normalize_category)
+    ages["_position"] = ages["full"].map(_age_position)
+    ages = ages.sort_values("_position").drop(columns="_position")
+    age_keys = ages["full"].map(lambda value: canonical_key("age_group", value)).tolist()
+    age_full = ages["full"].astype(str).tolist()
+    all_age_keys = frame["age_group"].map(lambda value: canonical_key("age_group", value))
+    all_sex_keys = frame["sex"].map(lambda value: canonical_key("sex", value))
     sex_labels = category_counts(frame["sex"], limit=8)["label"]
+    palette = ["#4767e8", "#e98ca8", "#a9b5c8", "#d9deea"]
     traces = []
 
-    for sex in sex_labels:
-        sex_key = normalize_category(sex)
+    for index, sex in enumerate(sex_labels):
+        sex_key = canonical_key("sex", sex)
         values = [
             int(((all_age_keys == age) & (all_sex_keys == sex_key)).sum())
             for age in age_keys
@@ -256,20 +576,42 @@ def _age_sex_chart(frame):
                 "name": sex,
                 "x": ages["label"].astype(str).tolist(),
                 "y": values,
+                "customdata": age_full,
+                "marker": {"color": palette[index % len(palette)]},
+                "hovertemplate": "%{customdata}<br>%{fullData.name}: %{y:,}<extra></extra>",
             }
         )
 
     chart = _layout(traces)
-    chart["layout"]["barmode"] = "group"
-    chart["layout"]["xaxis"] = {"title": None, "tickangle": -25}
-    chart["layout"]["yaxis"] = {"title": None, "gridcolor": "#edf0f5"}
+    chart["layout"]["barmode"] = "stack"
+    chart["layout"]["margin"]["t"] = 44
+    chart["layout"]["legend"] = {
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": 1.02,
+        "x": 0,
+        "font": {"size": 11},
+    }
+    chart["layout"]["xaxis"] = {
+        "title": None,
+        "tickangle": 0,
+        "automargin": True,
+        "tickfont": {"size": 11},
+    }
+    chart["layout"]["yaxis"] = {
+        "title": None,
+        "gridcolor": "#edf0f5",
+        "automargin": True,
+        "tickformat": ",d",
+        "zeroline": False,
+    }
     return chart
 
 
 def _ordered_counts(series, order):
     counts = category_counts(series, limit=len(order) + 2)
     positions = {normalize_category(label): index for index, label in enumerate(order)}
-    counts["_position"] = counts["label"].map(
+    counts["_position"] = counts["full"].map(
         lambda label: positions.get(normalize_category(label), len(positions))
     )
     return counts.sort_values("_position").drop(columns="_position")
@@ -282,14 +624,16 @@ def _time_counts(series):
         match = re.search(r"(\d{2}):(\d{2})", label)
         return int(match.group(1)) * 60 + int(match.group(2)) if match else 1440
 
-    counts["_position"] = counts["label"].map(time_position)
+    counts["_position"] = counts["full"].map(time_position)
     return counts.sort_values("_position").drop(columns="_position")
+
 
 
 def _priority_table(frame, year):
     previous_year = year - 1
-    current = frame[frame["year"] == year]["department"].value_counts()
-    previous = frame[frame["year"] == previous_year]["department"].value_counts()
+    labels = frame["department"].map(department_full)
+    current = labels[frame["year"] == year].value_counts()
+    previous = labels[frame["year"] == previous_year].value_counts()
     total = int(current.sum())
     rows = []
 
@@ -320,14 +664,42 @@ def _priority_table(frame, year):
     return rows, previous_year
 
 
+def _dictionary_rows(frame):
+    rows = []
+    for field, field_name in LABEL_FIELD_NAMES:
+        counts = category_counts(frame[field], limit=1000)
+        for _, row in counts.iterrows():
+            if row["label"] == row["full"]:
+                continue
+            rows.append(
+                {
+                    "field": field_name,
+                    "short": row["label"],
+                    "full": row["full"],
+                }
+            )
+    return rows
+
+
 def create_app():
     app = Flask(__name__)
+
+    @app.template_filter("pct")
+    def pct_filter(value, digits=1):
+        return _pct_text(value, digits)
+
+    @app.template_filter("signed_pct")
+    def signed_pct_filter(value):
+        return f"{float(value):+.1f}".replace(".", ",")
 
     @app.get("/")
     def index():
         frame = load_data()
         years = sorted(int(year) for year in frame["year"].dropna().unique())
-        departments = sorted(frame["department"].unique(), key=str.casefold)
+        departments = sorted(
+            {department_full(value) for value in frame["department"].unique()},
+            key=str.casefold,
+        )
 
         selected_year = request.args.get("year", "all")
         selected_department = request.args.get("department", "all")
@@ -338,33 +710,164 @@ def create_app():
             abort(400, description="El departamento seleccionado no está disponible.")
 
         selected = frame
+        if selected_department != "all":
+            selected = selected[selected["department"].map(department_full) == selected_department]
         if selected_year != "all":
             selected = selected[selected["year"] == int(selected_year)]
-        if selected_department != "all":
-            selected = selected[selected["department"] == selected_department]
 
         year_frame = frame
         if selected_year != "all":
             year_frame = year_frame[year_frame["year"] == int(selected_year)]
 
         total = len(selected)
-        sex_keys = selected["sex"].map(normalize_category)
-        women_share = float((sex_keys == "mujer").mean() * 100) if total else 0
-        top_scene = category_counts(selected["scene"], limit=1)
-        leading_scene = top_scene.iloc[0]["label"] if not top_scene.empty else "Sin datos"
+
+        scene_counts = category_counts(selected["scene"], limit=8)
+        sex_counts = category_counts(selected["sex"], limit=8)
+        trigger_counts = category_counts(selected["trigger"], limit=8)
+        department_counts = category_counts(year_frame["department"], limit=10)
+        department_scope = category_counts(selected["department"], limit=10)
+        month_counts = _ordered_counts(selected["month"], MONTH_ORDER)
+        weekday_counts = _ordered_counts(selected["weekday"], WEEKDAY_ORDER)
+        hour_counts = _time_counts(selected["time_range"])
+
+        leading_scene = scene_counts.iloc[0]["label"] if not scene_counts.empty else "Sin datos"
+        scene_share = _pct(int(scene_counts.iloc[0]["count"]), total) if not scene_counts.empty else 0.0
+        women_count = int(sex_counts.loc[sex_counts["label"] == "Mujer", "count"].sum())
+        women_share = _pct(women_count, total)
+        top3_share = _pct(int(department_scope.head(3)["count"].sum()), total) if not department_scope.empty else 0.0
+        top3_names = ", ".join(department_scope.head(3)["label"].tolist()) or "Los territorios disponibles"
+        top_trigger = trigger_counts.iloc[0]["label"] if not trigger_counts.empty else "Sin datos"
+        trigger_share = _pct(int(trigger_counts.iloc[0]["count"]), total) if not trigger_counts.empty else 0.0
+        alcohol_count = int(trigger_counts.loc[trigger_counts["label"] == "Alcohol / SPA", "count"].sum())
+        alcohol_share = _pct(alcohol_count, total)
+        top_hour = (
+            hour_counts.sort_values("count", ascending=False).iloc[0]
+            if not hour_counts.empty
+            else None
+        )
+        top_weekday = (
+            weekday_counts.sort_values("count", ascending=False).iloc[0]
+            if not weekday_counts.empty
+            else None
+        )
+        top_month = (
+            month_counts.sort_values("count", ascending=False).iloc[0]
+            if not month_counts.empty
+            else None
+        )
+
+        annual_frame = frame
+        if selected_department != "all":
+            annual_frame = annual_frame[annual_frame["department"].map(department_full) == selected_department]
+        annual_counts = annual_frame.dropna(subset=["year"]).groupby("year").size().sort_index()
+        drop_2020 = None
+        if 2019 in annual_counts.index and 2020 in annual_counts.index:
+            previous_total = int(annual_counts.loc[2019])
+            if previous_total:
+                drop_2020 = (int(annual_counts.loc[2020]) - previous_total) / previous_total * 100
+
+        logistic = next(
+            (metric for metric in MODEL_METRICS if "log" in metric["name"].casefold()),
+            MODEL_METRICS[0],
+        )
+        alcohol_count_text = f"{alcohol_count:,}".replace(",", ".")
+        if selected_department == "all":
+            territory_finding = {
+                "tag": "TERRITORIO",
+                "value": f"{_pct_text(top3_share)}%",
+                "title": "se concentra en pocos territorios",
+                "detail": f"{top3_names} reúnen la mayor parte de los registros.",
+            }
+        else:
+            scope_label = f"en {selected_year}" if selected_year != "all" else "en el periodo"
+            territory_finding = {
+                "tag": "TERRITORIO",
+                "value": f"{_pct_text(_pct(total, len(year_frame)))}%",
+                "title": f"del total nacional {scope_label}",
+                "detail": f"{selected_department} aporta {total:,}".replace(",", ".") + " registros en la selección.",
+            }
+
+        findings = [
+            {
+                "tag": "VIVIENDA",
+                "value": f"{_pct_text(scene_share)}%",
+                "title": "ocurre en la vivienda",
+                "detail": f"“{leading_scene}” es el escenario más registrado en la selección actual.",
+            },
+            {
+                "tag": "VÍCTIMAS",
+                "value": f"{_pct_text(women_share)}%",
+                "title": "de las víctimas son mujeres",
+                "detail": "Participación femenina sobre los registros filtrados.",
+            },
+            territory_finding,
+            {
+                "tag": "FACTOR",
+                "value": f"{_pct_text(trigger_share)}%",
+                "title": f"se asocia a {top_trigger.lower()}",
+                "detail": "Es el factor desencadenante más frecuente de la selección.",
+            },
+            {
+                "tag": "CALIDAD",
+                "value": f"{_pct_text(alcohol_share)}%",
+                "title": "es la participación del alcohol/SPA",
+                "detail": (
+                    f"“Alcoholismo” y “Consumo de alcohol/SPA” suman {alcohol_count_text} "
+                    "registros y juntos son el segundo factor."
+                    if alcohol_count
+                    else "No hay registros de alcohol/SPA en la selección actual."
+                ),
+            },
+            {
+                "tag": "MODELO",
+                "value": f"{_pct_text(logistic['f1_macro'] * 100)}%",
+                "title": "F1 macro del mejor modelo",
+                "detail": "Clasifica el escenario de un registro observado; no estima riesgo individual.",
+            },
+        ]
+
+        conclusion = (
+            f"El patrón es consistente: {_pct_text(scene_share)}% de los registros ocurre en vivienda, "
+            f"{_pct_text(women_share)}% corresponde a mujeres y {_pct_text(trigger_share)}% se asocia a "
+            f"{top_trigger.lower()}."
+        )
+        if top_hour is not None:
+            conclusion += (
+                f" El rango {top_hour['label']} concentra "
+                f"{_pct_text(_pct(int(top_hour['count']), total))}% de los registros."
+            )
+        if top_weekday is not None:
+            conclusion += (
+                f" El {top_weekday['full'].lower()} es el día con más registros "
+                f"({_pct_text(_pct(int(top_weekday['count']), total))}%)"
+            )
+            if top_month is not None:
+                conclusion += f" y {top_month['full'].lower()} el mes con más casos."
+            else:
+                conclusion += "."
+        conclusion += (
+            " Son señales descriptivas sobre registros reportados; no estiman riesgo individual ni prueban causalidad."
+        )
+        pandemic_note = None
+        if drop_2020 is not None and drop_2020 < 0:
+            pandemic_note = (
+                f"Entre 2019 y 2020 los registros cayeron {_pct_text(abs(drop_2020))}%. La caída coincide con la pandemia, "
+                "pero también con cambios en el acceso a servicios y en el reporte: no se puede atribuir solo a ella."
+            )
+
         focus_year = int(selected_year) if selected_year != "all" else years[-1]
         priorities, previous_year = _priority_table(frame, focus_year)
 
         figures = {
             "annual": _annual_chart(frame, None if selected_department == "all" else selected_department),
             "sex": _sex_chart(selected),
-            "scenes": _bar_chart(category_counts(selected["scene"], 8), "#4767e8", True),
-            "departments": _bar_chart(category_counts(year_frame["department"], 10), "#58a69a", True),
-            "triggers": _bar_chart(category_counts(selected["trigger"], 8), "#e79a54", True),
+            "scenes": _bar_chart(scene_counts, "#4767e8", True),
+            "departments": _bar_chart(department_counts, "#58a69a", True),
+            "triggers": _bar_chart(trigger_counts, "#e79a54", True),
             "age_sex": _age_sex_chart(selected),
-            "months": _bar_chart(_ordered_counts(selected["month"], MONTH_ORDER), "#58a69a"),
-            "weekdays": _bar_chart(_ordered_counts(selected["weekday"], WEEKDAY_ORDER), "#765be7"),
-            "hours": _bar_chart(_time_counts(selected["time_range"]), "#e79a54"),
+            "months": _bar_chart(month_counts, "#58a69a"),
+            "weekdays": _bar_chart(weekday_counts, "#765be7"),
+            "hours": _bar_chart(hour_counts, "#e79a54"),
         }
         return render_template(
             "index.html",
@@ -380,8 +883,13 @@ def create_app():
             previous_year=previous_year,
             priorities=priorities,
             model_metrics=MODEL_METRICS,
+            findings=findings,
+            conclusion=conclusion,
+            pandemic_note=pandemic_note,
+            dictionary=_dictionary_rows(frame),
             figures=figures,
         )
+
 
     @app.get("/health")
     def health():

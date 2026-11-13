@@ -18,6 +18,7 @@
         <a href="#descriptivo">Descriptivo</a>
         <a href="#predictivo">Predictivo</a>
         <a href="#prescriptivo">Prescriptivo</a>
+        <a href="#hallazgos">Hallazgos</a>
       </nav>
       <span class="source-tag"><span></span> Datos abiertos · Colombia</span>
     </header>
@@ -90,7 +91,7 @@
           <article class="metric-card">
             <span class="metric-icon rose">◌</span>
             <p>Víctimas mujeres</p>
-            <strong>{{ "%.1f"|format(women_share) }}<small class="unit">%</small></strong>
+            <strong>{{ women_share|pct }}<small class="unit">%</small></strong>
             <small>Participación en los registros filtrados</small>
           </article>
           <article class="metric-card">
@@ -117,7 +118,7 @@
             <div id="sex-chart" class="chart"></div>
           </article>
           <article class="chart-card">
-            <div class="card-heading"><div><h3>Escenarios más frecuentes</h3><p>Las etiquetas equivalentes se agrupan.</p></div><span class="chart-index">03</span></div>
+            <div class="card-heading"><div><h3>Escenarios más frecuentes</h3><p>Etiquetas cortas; el nombre completo aparece al pasar el cursor.</p></div><span class="chart-index">03</span></div>
             <div id="scenes-chart" class="chart"></div>
           </article>
           <article class="chart-card">
@@ -125,15 +126,15 @@
             <div id="departments-chart" class="chart"></div>
           </article>
           <article class="chart-card">
-            <div class="card-heading"><div><h3>Factores desencadenantes registrados</h3><p>Frecuencias; no implican causalidad.</p></div><span class="chart-index">05</span></div>
+            <div class="card-heading"><div><h3>Factores desencadenantes registrados</h3><p>Etiquetas cortas y sinónimos unificados. Frecuencias; no implican causalidad.</p></div><span class="chart-index">05</span></div>
             <div id="triggers-chart" class="chart"></div>
           </article>
           <article class="chart-card">
-            <div class="card-heading"><div><h3>Edad y sexo</h3><p>Grupos de edad con más registros en la selección.</p></div><span class="chart-index">06</span></div>
+            <div class="card-heading"><div><h3>Edad y sexo</h3><p>Barras apiladas por sexo para los grupos de edad con más registros.</p></div><span class="chart-index">06</span></div>
             <div id="age-sex-chart" class="chart"></div>
           </article>
           <article class="chart-card">
-            <div class="card-heading"><div><h3>Registros por mes</h3><p>Distribución a lo largo del año.</p></div><span class="chart-index">07</span></div>
+            <div class="card-heading"><div><h3>Registros por mes</h3><p>Distribución a lo largo del año; etiquetas abreviadas.</p></div><span class="chart-index">07</span></div>
             <div id="months-chart" class="chart"></div>
           </article>
           <article class="chart-card">
@@ -141,7 +142,7 @@
             <div id="weekdays-chart" class="chart"></div>
           </article>
           <article class="chart-card">
-            <div class="card-heading"><div><h3>Rango horario</h3><p>Hora referida en los registros disponibles.</p></div><span class="chart-index">09</span></div>
+            <div class="card-heading"><div><h3>Rango horario</h3><p>Rangos de 3 horas: 00–03 equivale a 00:00–02:59.</p></div><span class="chart-index">09</span></div>
             <div id="hours-chart" class="chart"></div>
           </article>
         </div>
@@ -173,7 +174,7 @@
             <thead><tr><th>Modelo</th><th>Exactitud</th><th>Exactitud balanceada</th><th>F1 macro</th></tr></thead>
             <tbody>
               {% for metric in model_metrics %}
-              <tr><td>{{ metric.name }}</td><td>{{ "%.2f"|format(metric.accuracy * 100) }}%</td><td>{{ "%.2f"|format(metric.balanced_accuracy * 100) }}%</td><td>{{ "%.2f"|format(metric.f1_macro * 100) }}%</td></tr>
+              <tr><td>{{ metric.name }}</td><td>{{ (metric.accuracy * 100)|pct(2) }}%</td><td>{{ (metric.balanced_accuracy * 100)|pct(2) }}%</td><td>{{ (metric.f1_macro * 100)|pct(2) }}%</td></tr>
               {% endfor %}
             </tbody>
           </table>
@@ -200,8 +201,8 @@
                     <td>{{ row.department }}</td>
                     <td>{{ "{:,}".format(row.count).replace(",", ".") }}</td>
                     <td>{{ "{:,}".format(row.previous_count).replace(",", ".") }}</td>
-                    <td>{% if row.variation is not none %}{{ "%+.1f"|format(row.variation) }}%{% else %}N/D{% endif %}</td>
-                    <td>{{ "%.1f"|format(row.share) }}%</td>
+                    <td>{% if row.variation is not none %}{{ row.variation|signed_pct }}%{% else %}N/D{% endif %}</td>
+                    <td>{{ row.share|pct }}%</td>
                     <td><span class="priority-tag">{{ row.attention }}</span></td>
                   </tr>
                   {% else %}
@@ -223,6 +224,56 @@
             <p class="action-caveat">Las prioridades son una guía exploratoria. No ajustan por población, acceso a servicios ni nivel de denuncia.</p>
           </aside>
         </div>
+      </section>
+
+      <section id="hallazgos" class="section-block">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">04 · ¿QUÉ NOS DICE EL ANÁLISIS?</p>
+            <h2>Hallazgos y lectura de conjunto</h2>
+          </div>
+          <p>Indicadores calculados con los filtros actuales. Describen registros reportados, no tasas de incidencia ni riesgo individual.</p>
+        </div>
+
+        <div class="findings-grid">
+          {% for finding in findings %}
+          <article class="finding-card">
+            <span class="finding-tag">{{ finding.tag }}</span>
+            <strong>{{ finding.value }}</strong>
+            <h3>{{ finding.title }}</h3>
+            <p>{{ finding.detail }}</p>
+          </article>
+          {% endfor %}
+        </div>
+
+        <div class="finding-conclusion">
+          <div>
+            <p class="eyebrow">LECTURA DE CONJUNTO</p>
+            <p>{{ conclusion }}</p>
+            {% if pandemic_note %}<p class="finding-context">{{ pandemic_note }}</p>{% endif %}
+          </div>
+          <span class="finding-period">COLOMBIA · {{ year_range }}</span>
+        </div>
+
+        <details class="dictionary-card">
+          <summary>
+            <div>
+              <span class="dictionary-title">Diccionario de etiquetas</span>
+              <small>Cómo se acortaron y agruparon los nombres. El texto completo aparece al pasar el cursor sobre cada gráfico.</small>
+            </div>
+            <span class="dictionary-count">{{ dictionary|length }} etiquetas</span>
+          </summary>
+          <div class="dictionary-scroll">
+            <table class="dictionary-table">
+              <thead><tr><th>Variable</th><th>Etiqueta corta</th><th>Etiqueta completa</th></tr></thead>
+              <tbody>
+                {% for row in dictionary %}
+                <tr><td>{{ row.field }}</td><td><strong>{{ row.short }}</strong></td><td>{{ row.full }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </section>
 
       <section class="source-note">
@@ -262,10 +313,11 @@
           template: "plotly_white",
           height: 340,
           margin: {l: 38, r: 12, t: 15, b: 55},
-          yaxis: {range: [0, 100], ticksuffix: "%", gridcolor: "#edf0f5"},
-          xaxis: {tickangle: -12},
+          yaxis: {range: [0, 100], ticksuffix: "%", gridcolor: "#edf0f5", automargin: true},
+          xaxis: {tickangle: -12, automargin: true},
           legend: {orientation: "h", y: 1.16, x: 0},
-          font: {family: "Inter, Segoe UI, sans-serif", color: "#3f4b60"},
+          separators: ",.",
+          font: {family: "Inter, Segoe UI, sans-serif", color: "#3f4b60", size: 11},
           paper_bgcolor: "rgba(0,0,0,0)",
           plot_bgcolor: "rgba(0,0,0,0)"
         }

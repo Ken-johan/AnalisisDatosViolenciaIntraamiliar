@@ -98,6 +98,44 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(counts.iloc[0]["label"], "Vía Pública")
         self.assertEqual(counts.iloc[0]["count"], 2)
 
+    def test_scene_variants_are_merged_and_use_short_labels(self):
+        counts = dashboard.category_counts(
+            pd.Series(
+                [
+                    "Calle (Autopista,Avenida,Dentro de La Ciudad)",
+                    "Calle (autopista, avenida, dentro de la ciudad)",
+                ],
+                name="scene",
+            )
+        )
+
+        self.assertEqual(len(counts), 1)
+        self.assertEqual(counts.iloc[0]["label"], "Calle / vía urbana")
+        self.assertEqual(counts.iloc[0]["count"], 2)
+        self.assertIn("autopista", counts.iloc[0]["full"])
+
+    def test_trigger_synonyms_are_merged(self):
+        counts = dashboard.category_counts(
+            pd.Series(
+                [
+                    "Alcoholismo / drogadicción",
+                    "Consumo de alcohol y/o sustancias psicoactivas",
+                ],
+                name="trigger",
+            )
+        )
+
+        self.assertEqual(len(counts), 1)
+        self.assertEqual(counts.iloc[0]["label"], "Alcohol / SPA")
+        self.assertEqual(counts.iloc[0]["count"], 2)
+
+    def test_dashboard_renders_findings_and_label_dictionary(self):
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Hallazgos y lectura de conjunto".encode(), response.data)
+        self.assertIn("Diccionario de etiquetas".encode(), response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

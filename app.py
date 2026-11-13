@@ -1,5 +1,6 @@
 import os
 import re
+import threading
 import unicodedata
 from functools import lru_cache
 from pathlib import Path
@@ -14,22 +15,21 @@ DEFAULT_DATA = (
     DATA_DIR
     / "Violencia_intrafamiliar._Colombia,_años_2015_a_2024._Cifras_definitivas_20261023.csv.gz"
 )
+# Caché generado en el build (scripts/build_cache.py). Evita parsear el CSV
+# comprimido de 164 MB en la primera visita a Render.
+CACHE_DATA = DATA_DIR / "dataset.pkl"
 
+# Solo se leen las columnas que usa el tablero. Menos columnas = menos memoria
+# y menos tiempo de arranque en planes gratuitos (Render: 512 MB, 0,1 CPU).
 COLUMN_MAP = {
-    "ID": "record_id",
     "Año del hecho": "year",
     "Sexo de la victima": "sex",
     "Grupo de edad quinquenal": "age_group",
-    "Ciclo Vital": "life_stage",
     "Mes del hecho": "month",
     "Dia del hecho": "weekday",
     "Rango de Hora del Hecho X 3 Horas": "time_range",
     "Departamento del hecho DANE": "department",
-    "Municipio del hecho DANE": "municipality",
     "Escenario del Hecho": "scene",
-    "Circunstancia del Hecho Detallada": "circumstance",
-    "Contexto del Hecho": "context",
-    "Presunto Agresor Detallado": "alleged_aggressor",
     "Factor Desencadenante de la Agresión": "trigger",
 }
 
@@ -326,9 +326,10 @@ def _data_path():
     )
 
 
-@lru_cache(maxsize=1)
-def load_data():
-    path = _data_path()
+_LOAD_LOCK = threading.Lock()
+
+
+def read_dataset(path):
     frame = pd.read_csv(
         path,
         usecols=list(COLUMN_MAP),
@@ -340,11 +341,32 @@ def load_data():
 
     frame["year"] = pd.to_numeric(frame["year"], errors="coerce").astype("Int64")
     for column in frame.columns.difference(["year"]):
-        frame[column] = frame[column].str.strip().replace("", "Sin información")
+        frame[column] = (
+            frame[column].str.strip().replace("", "Sin información").astype("category")
+        )
 
     if frame["year"].notna().sum() == 0:
         raise ValueError(f"No se encontraron años válidos en el dataset: {path}")
-    return frame
+    return prepare_frame(frame)
+
+
+@lru_cache(maxsize=1)
+def _load_data_cached():
+    if CACHE_DATA.is_file() and not os.environ.get("DATA_PATH"):
+        try:
+            frame = pd.read_pickle(CACHE_DATA)
+            if {"year", "department_label"}.issubset(frame.columns):
+                return prepare_frame(frame)
+        except Exception:
+            # Si la caché no es compatible, se reconstruye desde el CSV.
+            pass
+    return read_dataset(_data_path())
+
+
+def load_data():
+    """Carga única y segura entre hilos (evita duplicar el DataFrame en memoria)."""
+    with _LOAD_LOCK:
+        return _load_data_cached()
 
 
 @lru_cache(maxsize=8192)
@@ -386,13 +408,68 @@ def department_full(value):
     return category_label("department", value)[1]
 
 
+def _canonical_series(frame, field):
+    """Devuelve la clave canónica por fila sin recalcular en cada gráfico."""
+    column = f"{field}_key"
+    if column in frame.columns:
+        return frame[column]
+    values = frame[field].astype(object)
+    mapping = {value: canonical_key(field, value) for value in pd.unique(values)}
+    return values.map(mapping)
+
+
+def _department_series(frame):
+    if "department_label" in frame.columns:
+        return frame["department_label"]
+    values = frame["department"].astype(object)
+    mapping = {value: department_full(value) for value in pd.unique(values)}
+    return values.map(mapping)
+
+
+def prepare_frame(frame):
+    """Precalcula claves, etiquetas y diccionario una sola vez por dataset.
+
+    El cálculo se hace sobre los valores únicos (no sobre las 236.840 filas),
+    de modo que cada petición solo agrupa códigos ya preparados.
+    """
+    if frame.attrs.get("prepared"):
+        return frame
+
+    for field, _ in LABEL_FIELD_NAMES:
+        if field not in frame.columns:
+            continue
+        values = frame[field].astype(object)
+        mapping = {value: canonical_key(field, value) for value in pd.unique(values)}
+        frame[f"{field}_key"] = values.map(mapping).astype("category")
+
+    if "department" in frame.columns:
+        departments = frame["department"].astype(object)
+        mapping = {value: department_full(value) for value in pd.unique(departments)}
+        frame["department_label"] = departments.map(mapping).astype("category")
+
+    frame.attrs["prepared"] = True
+    frame.attrs["dictionary"] = _dictionary_rows(frame)
+    return frame
+
+
 def category_counts(series, limit=10, field=None):
     field = field or series.name
-    labels = series.fillna("Sin información").astype(str).str.strip()
-    labels = labels.replace("", "Sin información")
-    keys = labels.map(lambda value: canonical_key(field, value))
-    counts = keys.value_counts().head(limit)
-    raw_by_key = labels.groupby(keys, sort=False).first()
+    values = series
+    if isinstance(values.dtype, pd.CategoricalDtype):
+        unique = list(values.cat.categories)
+    else:
+        values = values.fillna("Sin información").astype(str)
+        unique = list(pd.unique(values))
+
+    mapping = {value: canonical_key(field, value) for value in unique}
+    keys = values.map(mapping)
+
+    counts = keys.value_counts()
+    counts = counts[counts > 0].head(limit)
+    if counts.empty:
+        return pd.DataFrame(columns=["label", "full", "count"])
+
+    raw_by_key = values.groupby(keys, observed=True).first()
     rows = []
     for key, count in counts.items():
         short, full = label_for(field, key, raw_by_key.get(key, key))
@@ -499,7 +576,7 @@ def _bar_chart(counts, color="#4767e8", horizontal=False):
 def _annual_chart(frame, department=None):
     annual = frame.dropna(subset=["year"])
     if department:
-        annual = annual[annual["department"].map(department_full) == department]
+        annual = annual[_department_series(annual) == department]
     counts = annual.groupby("year").size().sort_index()
     chart = _layout(
         [
@@ -556,18 +633,24 @@ def _age_sex_chart(frame):
     ages = category_counts(frame["age_group"], limit=10)
     ages["_position"] = ages["full"].map(_age_position)
     ages = ages.sort_values("_position").drop(columns="_position")
-    age_keys = ages["full"].map(lambda value: canonical_key("age_group", value)).tolist()
+    age_keys = [canonical_key("age_group", full) for full in ages["full"]]
     age_full = ages["full"].astype(str).tolist()
-    all_age_keys = frame["age_group"].map(lambda value: canonical_key("age_group", value))
-    all_sex_keys = frame["sex"].map(lambda value: canonical_key("sex", value))
-    sex_labels = category_counts(frame["sex"], limit=8)["label"]
+    sex_counts = category_counts(frame["sex"], limit=8)
+    sex_labels = sex_counts["label"].tolist()
+    sex_keys = [canonical_key("sex", full) for full in sex_counts["full"]]
+
+    table = pd.crosstab(
+        _canonical_series(frame, "age_group"),
+        _canonical_series(frame, "sex"),
+    )
     palette = ["#4767e8", "#e98ca8", "#a9b5c8", "#d9deea"]
     traces = []
 
-    for index, sex in enumerate(sex_labels):
-        sex_key = canonical_key("sex", sex)
+    for index, (sex, sex_key) in enumerate(zip(sex_labels, sex_keys)):
         values = [
-            int(((all_age_keys == age) & (all_sex_keys == sex_key)).sum())
+            int(table.at[age, sex_key])
+            if age in table.index and sex_key in table.columns
+            else 0
             for age in age_keys
         ]
         traces.append(
@@ -608,8 +691,8 @@ def _age_sex_chart(frame):
     return chart
 
 
-def _ordered_counts(series, order):
-    counts = category_counts(series, limit=len(order) + 2)
+def _ordered_counts(frame, field, order):
+    counts = category_counts(frame[field], limit=len(order) + 2, field=field)
     positions = {normalize_category(label): index for index, label in enumerate(order)}
     counts["_position"] = counts["full"].map(
         lambda label: positions.get(normalize_category(label), len(positions))
@@ -617,8 +700,8 @@ def _ordered_counts(series, order):
     return counts.sort_values("_position").drop(columns="_position")
 
 
-def _time_counts(series):
-    counts = category_counts(series, limit=20)
+def _time_counts(frame, field="time_range"):
+    counts = category_counts(frame[field], limit=20, field=field)
 
     def time_position(label):
         match = re.search(r"(\d{2}):(\d{2})", label)
@@ -631,7 +714,7 @@ def _time_counts(series):
 
 def _priority_table(frame, year):
     previous_year = year - 1
-    labels = frame["department"].map(department_full)
+    labels = _department_series(frame)
     current = labels[frame["year"] == year].value_counts()
     previous = labels[frame["year"] == previous_year].value_counts()
     total = int(current.sum())
@@ -666,18 +749,21 @@ def _priority_table(frame, year):
 
 def _dictionary_rows(frame):
     rows = []
+    seen = set()
     for field, field_name in LABEL_FIELD_NAMES:
-        counts = category_counts(frame[field], limit=1000)
-        for _, row in counts.iterrows():
-            if row["label"] == row["full"]:
+        values = frame[field].astype(object)
+        for value in pd.unique(values):
+            if pd.isna(value):
                 continue
-            rows.append(
-                {
-                    "field": field_name,
-                    "short": row["label"],
-                    "full": row["full"],
-                }
-            )
+            key = canonical_key(field, value)
+            short, full = label_for(field, key, value)
+            if short == full:
+                continue
+            signature = (field_name, short, full)
+            if signature in seen:
+                continue
+            seen.add(signature)
+            rows.append({"field": field_name, "short": short, "full": full})
     return rows
 
 
@@ -694,10 +780,10 @@ def create_app():
 
     @app.get("/")
     def index():
-        frame = load_data()
+        frame = prepare_frame(load_data())
         years = sorted(int(year) for year in frame["year"].dropna().unique())
         departments = sorted(
-            {department_full(value) for value in frame["department"].unique()},
+            frame["department_label"].astype(str).unique(),
             key=str.casefold,
         )
 
@@ -711,7 +797,7 @@ def create_app():
 
         selected = frame
         if selected_department != "all":
-            selected = selected[selected["department"].map(department_full) == selected_department]
+            selected = selected[selected["department_label"] == selected_department]
         if selected_year != "all":
             selected = selected[selected["year"] == int(selected_year)]
 
@@ -721,14 +807,18 @@ def create_app():
 
         total = len(selected)
 
-        scene_counts = category_counts(selected["scene"], limit=8)
-        sex_counts = category_counts(selected["sex"], limit=8)
-        trigger_counts = category_counts(selected["trigger"], limit=8)
-        department_counts = category_counts(year_frame["department"], limit=10)
-        department_scope = category_counts(selected["department"], limit=10)
-        month_counts = _ordered_counts(selected["month"], MONTH_ORDER)
-        weekday_counts = _ordered_counts(selected["weekday"], WEEKDAY_ORDER)
-        hour_counts = _time_counts(selected["time_range"])
+        scene_counts = category_counts(selected["scene"], limit=8, field="scene")
+        sex_counts = category_counts(selected["sex"], limit=8, field="sex")
+        trigger_counts = category_counts(selected["trigger"], limit=8, field="trigger")
+        department_counts = category_counts(
+            year_frame["department"], limit=10, field="department"
+        )
+        department_scope = category_counts(
+            selected["department"], limit=10, field="department"
+        )
+        month_counts = _ordered_counts(selected, "month", MONTH_ORDER)
+        weekday_counts = _ordered_counts(selected, "weekday", WEEKDAY_ORDER)
+        hour_counts = _time_counts(selected)
 
         leading_scene = scene_counts.iloc[0]["label"] if not scene_counts.empty else "Sin datos"
         scene_share = _pct(int(scene_counts.iloc[0]["count"]), total) if not scene_counts.empty else 0.0
@@ -758,7 +848,9 @@ def create_app():
 
         annual_frame = frame
         if selected_department != "all":
-            annual_frame = annual_frame[annual_frame["department"].map(department_full) == selected_department]
+            annual_frame = annual_frame[
+                annual_frame["department_label"] == selected_department
+            ]
         annual_counts = annual_frame.dropna(subset=["year"]).groupby("year").size().sort_index()
         drop_2020 = None
         if 2019 in annual_counts.index and 2020 in annual_counts.index:
@@ -886,7 +978,7 @@ def create_app():
             findings=findings,
             conclusion=conclusion,
             pandemic_note=pandemic_note,
-            dictionary=_dictionary_rows(frame),
+            dictionary=frame.attrs.get("dictionary") or _dictionary_rows(frame),
             figures=figures,
         )
 
@@ -896,6 +988,8 @@ def create_app():
         try:
             path = _data_path()
         except FileNotFoundError as error:
+            if CACHE_DATA.is_file():
+                return jsonify(status="ok", dataset=CACHE_DATA.name)
             return jsonify(status="error", message=str(error)), 503
         return jsonify(status="ok", dataset=path.name)
 

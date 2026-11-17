@@ -17,7 +17,7 @@
       <p>Registros incluidos: {{ year_range }}. Los conteos describen reportes, no tasas de incidencia.</p>
     </div>
     <div class="metric-grid">
-      <article class="metric-card">
+      <article class="metric-card{% if alerts.total_incidents %} alert{% endif %}">
         <span class="metric-icon blue">▤</span>
         <p>Registros analizados</p>
         <strong>{{ "{:,}".format(total).replace(",", ".") }}</strong>

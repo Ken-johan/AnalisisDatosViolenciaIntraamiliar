@@ -262,3 +262,8 @@ footer span:first-child { color: #5f6d80; font-weight: 700; }
   .source-period { padding-left: 42px; }
   footer { padding: 0 17px 22px; font-size: 9px; }
 }
+/* Alert style for KPI cards */
+.metric-card.alert {
+  border: 2px solid var(--primary-dark);
+  background: #fff0e0; /* light orange background */
+}

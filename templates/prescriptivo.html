@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Prescriptivo | Violencia intrafamiliar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <section id="prescriptivo" class="section-block">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">04 · ¿DÓNDE ENFOCAR LA ATENCIÓN?</p>
+        <h2>Prioridad territorial</h2>
+      </div>
+      <p>Comparación de volumen registrado entre {{ previous_year }} y {{ focus_year }}. Ordenar por conteos no equivale a ordenar por riesgo.</p>
+    </div>
+    <div class="priority-layout">
+      <article class="chart-card priority-card">
+        <div class="card-heading">
+          <div>
+            <h3>Departamentos con más registros</h3>
+            <p>Variación interanual y participación del año {{ focus_year }}.</p>
+          </div>
+          <span class="chart-index">01</span>
+        </div>
+        <div class="table-scroll">
+          <table class="priority-table">
+            <thead>
+              <tr>
+                <th>Departamento</th>
+                <th>{{ focus_year }}</th>
+                <th>{{ previous_year }}</th>
+                <th>Variación %</th>
+                <th>Participación %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in priorities %}
+              <tr>
+                <td>{{ row.department }}</td>
+                <td>{{ row.focus|int }}</td>
+                <td>{{ row.previous|int }}</td>
+                <td>{{ row.variation }}%</td>
+                <td>{{ row.participation }}%</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

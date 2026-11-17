@@ -790,33 +790,9 @@ app.register_blueprint(prescriptivo_bp, url_prefix='/prescriptivo')
         return f"{float(value):+.1f}".replace(".", ",")
 
     @app.get("/")
-    def index():
-        frame = prepare_frame(load_data())
-        years = sorted(int(year) for year in frame["year"].dropna().unique())
-        departments = sorted(
-            frame["department_label"].astype(str).unique(),
-            key=str.casefold,
-        )
-
-        selected_year = request.args.get("year", "all")
-        selected_department = request.args.get("department", "all")
-        valid_years = {str(year) for year in years}
-        if selected_year != "all" and selected_year not in valid_years:
-            abort(400, description="El año seleccionado no está disponible.")
-        if selected_department != "all" and selected_department not in departments:
-            abort(400, description="El departamento seleccionado no está disponible.")
-
-        selected = frame
-        if selected_department != "all":
-            selected = selected[selected["department_label"] == selected_department]
-        if selected_year != "all":
-            selected = selected[selected["year"] == int(selected_year)]
-
-        year_frame = frame
-        if selected_year != "all":
-            year_frame = year_frame[year_frame["year"] == int(selected_year)]
-
-        total = len(selected)
+def index():
+    # Render the base dashboard layout with sidebar navigation.
+    return render_template("base.html")
 
         scene_counts = category_counts(selected["scene"], limit=8, field="scene")
         sex_counts = category_counts(selected["sex"], limit=8, field="sex")

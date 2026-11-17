@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Predictivo | Violencia intrafamiliar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <section id="predictivo" class="section-block tinted-section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">03 · ¿QUÉ PODRÍAMOS ESTIMAR?</p>
+        <h2>Análisis predictivo</h2>
+      </div>
+      <p>Importancia de variables para predecir el escenario del hecho.</p>
+    </div>
+    <div class="chart-card">
+      <div id="feature-importance" class="chart"></div>
+    </div>
+  </section>
+  <script>
+    const chart = {{ chart_json|safe }};
+    Plotly.newPlot('feature-importance', chart.data, chart.layout);
+  </script>
+</body>
+</html>

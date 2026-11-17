@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Diagnóstica | Violencia intrafamiliar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <section id="diagnostica" class="section-block">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">02 · ¿POR QUÉ PASÓ?</p>
+        <h2>Análisis diagnóstico</h2>
+      </div>
+      <p>Correlación entre variables numéricas para explorar relaciones potenciales.</p>
+    </div>
+    <div id="corr-chart" class="chart"></div>
+  </section>
+  <script>
+    const chart = {{ chart_json|safe }};
+    Plotly.newPlot('corr-chart', chart.data, chart.layout);
+  </script>
+</body>
+</html>

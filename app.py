@@ -770,16 +770,15 @@ def _dictionary_rows(frame):
 def create_app():
     app = Flask(__name__)
 
-# Register analytical blueprints
-from blueprints.descriptivo import descriptivo_bp
-from blueprints.diagnostica import diagnostica_bp
-from blueprints.predictivo import predictivo_bp
-from blueprints.prescriptivo import prescriptivo_bp
+    from blueprints.descriptivo import descriptivo_bp
+    from blueprints.diagnostica import diagnostica_bp
+    from blueprints.predictivo import predictivo_bp
+    from blueprints.prescriptivo import prescriptivo_bp
 
-app.register_blueprint(descriptivo_bp, url_prefix='/descriptivo')
-app.register_blueprint(diagnostica_bp, url_prefix='/diagnostica')
-app.register_blueprint(predictivo_bp, url_prefix='/predictivo')
-app.register_blueprint(prescriptivo_bp, url_prefix='/prescriptivo')
+    app.register_blueprint(descriptivo_bp, url_prefix="/descriptivo")
+    app.register_blueprint(diagnostica_bp, url_prefix="/diagnostica")
+    app.register_blueprint(predictivo_bp, url_prefix="/predictivo")
+    app.register_blueprint(prescriptivo_bp, url_prefix="/prescriptivo")
 
     @app.template_filter("pct")
     def pct_filter(value, digits=1):
@@ -790,9 +789,33 @@ app.register_blueprint(prescriptivo_bp, url_prefix='/prescriptivo')
         return f"{float(value):+.1f}".replace(".", ",")
 
     @app.get("/")
-def index():
-    # Render the base dashboard layout with sidebar navigation.
-    return render_template("base.html")
+    def index():
+        frame = prepare_frame(load_data())
+        years = sorted(int(year) for year in frame["year"].dropna().unique())
+        departments = sorted(
+            frame["department_label"].astype(str).unique(),
+            key=str.casefold,
+        )
+
+        selected_year = request.args.get("year", "all")
+        selected_department = request.args.get("department", "all")
+        valid_years = {str(year) for year in years}
+        if selected_year != "all" and selected_year not in valid_years:
+            abort(400, description="El año seleccionado no está disponible.")
+        if selected_department != "all" and selected_department not in departments:
+            abort(400, description="El departamento seleccionado no está disponible.")
+
+        selected = frame
+        if selected_department != "all":
+            selected = selected[selected["department_label"] == selected_department]
+        if selected_year != "all":
+            selected = selected[selected["year"] == int(selected_year)]
+
+        year_frame = frame
+        if selected_year != "all":
+            year_frame = year_frame[year_frame["year"] == int(selected_year)]
+
+        total = len(selected)
 
         scene_counts = category_counts(selected["scene"], limit=8, field="scene")
         sex_counts = category_counts(selected["sex"], limit=8, field="sex")

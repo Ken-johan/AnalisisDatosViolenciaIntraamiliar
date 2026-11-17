@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Violencia intrafamiliar | Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='sidebar.js') }}" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="#" data-endpoint="/descriptivo/">Descriptivo</a></li>
+        <li><a href="#" data-endpoint="/diagnostica/">Diagnóstica</a></li>
+        <li><a href="#" data-endpoint="/predictivo/">Predictivo</a></li>
+        <li><a href="#" data-endpoint="/prescriptivo/">Prescriptivo</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main id="main-panel">
+    <!-- Content loaded via AJAX -->
+    <div class="loading">Cargando…</div>
+  </main>
+</body>
+</html>

@@ -1,4 +1,16 @@
 :root {
+  /* ONU orange palette */
+  --primary:#ff6600;       /* naranja vibrante */
+  --primary-dark:#cc5200; /* naranja más oscuro */
+  --background:#fff8f0;   /* fondo cálido */
+  --text:#333333;         /* texto oscuro */
+  --accent:#0066ff;       /* azul de contraste */
+  --ink:#17283e;           /* se mantiene para tipografía */
+  --muted:#758196;
+  --surface:#ffffff;
+  --canvas:#f7f8fb;
+}
+
   color-scheme: light;
   --ink: #17283e;
   --muted: #758196;

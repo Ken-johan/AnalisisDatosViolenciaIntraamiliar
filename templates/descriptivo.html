@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Descriptivo | Violencia intrafamiliar</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <section id="descriptivo" class="section-block">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">01 · ¿QUÉ OBSERVAMOS?</p>
+        <h2>Panorama descriptivo</h2>
+      </div>
+      <p>Registros incluidos: {{ year_range }}. Los conteos describen reportes, no tasas de incidencia.</p>
+    </div>
+    <div class="metric-grid">
+      <article class="metric-card">
+        <span class="metric-icon blue">▤</span>
+        <p>Registros analizados</p>
+        <strong>{{ "{:,}".format(total).replace(",", ".") }}</strong>
+        <small>Con los filtros seleccionados</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-icon rose">◌</span>
+        <p>Víctimas mujeres</p>
+        <strong>{{ women_share|pct }}<small class="unit">%</small></strong>
+        <small>Participación en los registros filtrados</small>
+      </article>
+      <article class="metric-card">
+        <span class="metric-icon amber">⌂</span>
+        <p>Escenario más frecuente</p>
+        <strong class="metric-text">{{ leading_scene }}</strong>
+        <small>En los registros filtrados</small>
+      </article>
+      <article class="metric-card note-card">
+        <span class="metric-icon green">i</span>
+        <p>Cómo leer estas cifras</p>
+        <strong class="metric-text">Registros, no prevalencia</strong>
+        <small>La cobertura y el subregistro pueden variar por territorio y año.</small>
+      </article>
+    </div>
+    <div class="chart-grid">
+      <article class="chart-card chart-wide">
+        <div class="card-heading">
+          <div>
+            <h3>Evolución anual</h3>
+            <p>El filtro territorial se aplica; el filtro de año no oculta la serie. El descenso de 2020 requiere contexto.</p>
+          </div>
+          <span class="chart-index">01</span>
+        </div>
+        <div id="annual-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Registros por sexo</h3>
+            <p>Distribución en la selección actual.</p>
+          </div>
+          <span class="chart-index">02</span>
+        </div>
+        <div id="sex-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Escenarios más frecuentes</h3>
+            <p>Etiquetas cortas; el nombre completo aparece al pasar el cursor.</p>
+          </div>
+          <span class="chart-index">03</span>
+        </div>
+        <div id="scenes-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Departamentos</h3>
+            <p>Top 10 en el año seleccionado o en todo el periodo.</p>
+          </div>
+          <span class="chart-index">04</span>
+        </div>
+        <div id="departments-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Factores desencadenantes registrados</h3>
+            <p>Etiquetas cortas y sinónimos unificados. Frecuencias; no implican causalidad.</p>
+          </div>
+          <span class="chart-index">05</span>
+        </div>
+        <div id="triggers-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Edad y sexo</h3>
+            <p>Barras apiladas por sexo para los grupos de edad con más registros.</p>
+          </div>
+          <span class="chart-index">06</span>
+        </div>
+        <div id="age-sex-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Registros por mes</h3>
+            <p>Distribución a lo largo del año; etiquetas abreviadas.</p>
+          </div>
+          <span class="chart-index">07</span>
+        </div>
+        <div id="months-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Registros por día</h3>
+            <p>Ordenados de lunes a domingo.</p>
+          </div>
+          <span class="chart-index">08</span>
+        </div>
+        <div id="weekdays-chart" class="chart"></div>
+      </article>
+      <article class="chart-card">
+        <div class="card-heading">
+          <div>
+            <h3>Rango horario</h3>
+            <p>Rangos de 3 horas: 00–03 equivale a 00:00–02:59.</p>
+          </div>
+          <span class="chart-index">09</span>
+        </div>
+        <div id="hours-chart" class="chart"></div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

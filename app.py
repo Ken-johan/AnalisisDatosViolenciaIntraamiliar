@@ -770,6 +770,17 @@ def _dictionary_rows(frame):
 def create_app():
     app = Flask(__name__)
 
+# Register analytical blueprints
+from blueprints.descriptivo import descriptivo_bp
+from blueprints.diagnostica import diagnostica_bp
+from blueprints.predictivo import predictivo_bp
+from blueprints.prescriptivo import prescriptivo_bp
+
+app.register_blueprint(descriptivo_bp, url_prefix='/descriptivo')
+app.register_blueprint(diagnostica_bp, url_prefix='/diagnostica')
+app.register_blueprint(predictivo_bp, url_prefix='/predictivo')
+app.register_blueprint(prescriptivo_bp, url_prefix='/prescriptivo')
+
     @app.template_filter("pct")
     def pct_filter(value, digits=1):
         return _pct_text(value, digits)

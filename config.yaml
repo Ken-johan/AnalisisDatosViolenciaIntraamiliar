@@ -1,0 +1,10 @@
+kpis:
+  total_incidents:
+    description: "Total registros analizados"
+    threshold: 500000  # alert if exceeds (example)
+  women_share:
+    description: "% de víctimas mujeres"
+    threshold: 70  # alert if >70%
+  growth_rate:
+    description: "Crecimiento interanual de incidentes (%)"
+    threshold: 10  # alert if growth >10%

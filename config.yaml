@@ -1,0 +1,13 @@
+kpis:
+  total_incidents:
+    description: "Total registros analizados (alerta de volumen alto nacional)"
+    threshold: 200000
+  women_share:
+    description: "% de víctimas mujeres (bandera roja de género)"
+    threshold: 70.0
+  growth_rate:
+    description: "Crecimiento interanual acelerado (%)"
+    threshold: 10.0
+  vivienda_share:
+    description: "% de incidentes en vivienda (bandera roja entorno doméstico)"
+    threshold: 75.0

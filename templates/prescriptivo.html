@@ -1,0 +1,146 @@
+<!-- Módulo 4: Analítica Prescriptiva (Simulación / Optimización / Priorización) -->
+<section id="prescriptivo" class="section-block">
+  <div class="section-heading">
+    <div>
+      <span class="level-badge badge-prescriptivo">Nivel 4 · Analítica Prescriptiva</span>
+      <h2>¿Qué decisiones tomar? — Priorización Territorial, Simulación y Acciones</h2>
+    </div>
+    <p>Conversión de los hallazgos descriptivos, diagnósticos y predictivos en recomendaciones de política pública, simulación de escenarios de intervención y matriz de toma de decisiones institucionales.</p>
+  </div>
+
+  <!-- Rejilla de Gráficos Prescriptivos y Simulación -->
+  <div class="chart-story-grid">
+    <!-- Gráfico 1: Simulación What-If de Intervención -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Simulación de Impacto: Escenario Base vs. Intervención Focalizada</h3>
+          <p class="card-subtitle">Estimación de reducción del 18% de casos en los 5 departamentos prioritarios (Año {{ focus_year }}).</p>
+        </div>
+        <span class="chart-number">01</span>
+      </div>
+      <div id="pres-simulation-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>🎯 Simulación Prescriptiva (Análisis What-If)</h4>
+        <p><strong>Hipótesis de intervención:</strong> Despliegue de cuadrantes de mediación comunitaria en fines de semana y activación de alertas tempranas por consumo problemático de alcohol/SPA.</p>
+        <p><strong>Resultado estimado:</strong> Una reducción proyectada del <strong>18% en los hechos ocurridos en vivienda</strong> en los 5 territorios de mayor carga permitiría evitar miles de lesiones físicas graves al año, descongestionando además las comisarías y salas de urgencias hospitalarias.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 2: Clasificación de Atención -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Distribución Territorial por Nivel de Atención</h3>
+          <p class="card-subtitle">Semaforización institucional basada en volumen y tasa de variación.</p>
+        </div>
+        <span class="chart-number">02</span>
+      </div>
+      <div id="pres-attention-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>🎯 Estrategia de Asignación de Recursos</h4>
+        <p><strong>Criterio de optimización:</strong> El gasto público debe abandonar esquemas de asignación homogénea y migrar hacia <em>presupuesto focalizado por riesgo</em>. Los departamentos en alerta crítica requieren inyección de defensores de familia adicionales y centros de acogida 24/7.</p>
+      </div>
+    </article>
+  </div>
+
+  <!-- Tabla de Priorización Territorial -->
+  <div class="card-table-block">
+    <div class="card-header">
+      <div>
+        <h3>Matriz de Priorización Territorial (Top Departamentos)</h3>
+        <p class="card-subtitle">Comparativa entre {{ focus_year }} y {{ previous_year }} con clasificación de urgencia institucional.</p>
+      </div>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Departamento</th>
+            <th>Registros {{ focus_year }}</th>
+            <th>Registros {{ previous_year }}</th>
+            <th>Variación Interanual</th>
+            <th>Participación Nacional</th>
+            <th>Nivel de Atención Institucional</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in priorities %}
+          <tr>
+            <td><strong>{{ r.department }}</strong></td>
+            <td>{{ "{:,}".format(r.focus|int).replace(",", ".") }}</td>
+            <td>{{ "{:,}".format(r.previous|int).replace(",", ".") }}</td>
+            <td>
+              <span class="var-badge {{ 'var-up' if r.variation > 0 else 'var-down' }}">
+                {{ "+" if r.variation > 0 else "" }}{{ r.variation }}%
+              </span>
+            </td>
+            <td>{{ r.share }}%</td>
+            <td>
+              {% if 'Crítica' in r.attention %}
+              <span class="priority-tag tag-critical">{{ r.attention }}</span>
+              {% elif 'Prioritaria' in r.attention %}
+              <span class="priority-tag tag-priority">{{ r.attention }}</span>
+              {% elif 'Monitoreo' in r.attention %}
+              <span class="priority-tag tag-monitoring">{{ r.attention }}</span>
+              {% else %}
+              <span class="priority-tag tag-preventive">{{ r.attention }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Matriz de Toma de Decisiones por Actor Institucional -->
+  <div class="action-grid">
+    <article class="action-card">
+      <span class="action-icon">⚖️</span>
+      <p class="action-actor">Comisarías de Familia</p>
+      <h4>Ampliación de Cobertura & Alertas Tempranas</h4>
+      <ul>
+        <li>Implementar turnos rotativos nocturnos y fines de semana (viernes noche a domingo) cuando ocurre el 60% de los hechos críticos.</li>
+        <li>Medidas de protección cautelar inmediatas (desalojo del agresor en menos de 4 horas en lugar del promedio de 5 días hábiles).</li>
+        <li>Seguimiento telefónico obligatorio a los 7 y 30 días posteriores a la denuncia inicial.</li>
+      </ul>
+    </article>
+
+    <article class="action-card">
+      <span class="action-icon">👮</span>
+      <p class="action-actor">Policía Nacional & Cuadrantes</p>
+      <h4>Intervención en Flagrancia & Puntos Calientes</h4>
+      <ul>
+        <li>Despliegue de Patrullas Púrpura especializadas en sectores urbanos de Bogotá, Medellín, Cali y Soacha los fines de semana.</li>
+        <li>Protocolo de mediación y desarme preventivo ante llamadas vecinales por 'ruido o riña doméstica'.</li>
+        <li>Articulación digital con botones de pánico y geolocalización en dispositivos móviles de víctimas con medidas de protección.</li>
+      </ul>
+    </article>
+
+    <article class="action-card">
+      <span class="action-icon">🏛️</span>
+      <p class="action-actor">Alcaldías & Gobernaciones</p>
+      <h4>Políticas Preventivas & Control de SPA</h4>
+      <ul>
+        <li>Regulación estricta de horarios de venta y consumo de licor en zonas residenciales catalogadas como críticas.</li>
+        <li>Casas Refugio con capacidad de acogida digna y apoyo psicológico, legal y de autonomía económica para mujeres e hijos.</li>
+        <li>Campañas educativas comunitarias dirigidas a la deconstrucción de celos y conductas posesivas como supuestas 'pruebas de amor'.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const charts = {{ charts|tojson|safe }};
+    const config = {responsive: true, displayModeBar: false};
+    function plot(elemId, chartKey) {
+      if (!charts[chartKey]) return;
+      const parsed = JSON.parse(charts[chartKey]);
+      Plotly.newPlot(elemId, parsed.data, parsed.layout, config);
+    }
+    plot('pres-simulation-chart', 'simulation');
+    plot('pres-attention-chart', 'attention_pie');
+  })();
+</script>

@@ -1,0 +1,114 @@
+<!-- Módulo 3: Analítica Predictiva (Modelos / Proyecciones) -->
+<section id="predictivo" class="section-block">
+  <div class="section-heading">
+    <div>
+      <span class="level-badge badge-predictivo">Nivel 3 · Analítica Predictiva</span>
+      <h2>¿Qué podemos predecir? — Modelado de Clasificación y Proyecciones</h2>
+    </div>
+    <p>Evaluación técnica de modelos de Machine Learning (Dummy Classifier, Regresión Logística y Random Forest) entrenados para clasificar el escenario del hecho a partir de las características de la víctima, el hecho y el presunto agresor.</p>
+  </div>
+
+  <!-- Alerta Técnica Metodológica: Paradoja de la Exactitud -->
+  <aside class="model-paradox-card">
+    <div class="paradox-header">
+      <span class="flag-icon flag-purple">⚠️</span>
+      <div>
+        <h3>Rigor Metodológico: La Paradoja de la Exactitud (Accuracy Paradox)</h3>
+        <p>En problemas con <strong>fuerte desbalance de clases</strong> (donde la clase "Vivienda" representa ~75% del total), la métrica tradicional de <em>Accuracy</em> resulta completamente engañosa.</p>
+      </div>
+    </div>
+    <div class="paradox-body">
+      <p>Un modelo trivial base (Dummy) que predice siempre la clase mayoritaria obtiene <strong>75,67% de Exactitud</strong>, pero es incapaz de predecir ningún otro escenario (obteniendo un <strong>F1-Macro de apenas 3,31%</strong> y Exactitud Balanceada de 3,85%).</p>
+      <p>Por tanto, el criterio técnico idóneo para seleccionar y validar los modelos es el <strong>F1-Score Macro</strong> y la <strong>Exactitud Balanceada</strong>, métricas que evalúan equitativamente el rendimiento en todas las clases sin dejarse sesgar por la mayoría.</p>
+    </div>
+  </aside>
+
+  <!-- Gráficos del Nivel Predictivo -->
+  <div class="chart-story-grid">
+    <!-- Gráfico 1: Comparación de Modelos -->
+    <article class="chart-story-card chart-wide">
+      <div class="card-header">
+        <div>
+          <h3>Comparativa Multimétrica de Rendimiento de Modelos</h3>
+          <p class="card-subtitle">Exactitud vs. Exactitud Balanceada vs. F1-Score Macro en partición de prueba.</p>
+        </div>
+        <span class="chart-number">01</span>
+      </div>
+      <div id="pred-models-comparison" class="chart"></div>
+      <div class="story-box">
+        <h4>🤖 Interpretación Técnica del Modelado</h4>
+        <p><strong>Mejor modelo global:</strong> La <strong>Regresión Logística</strong> superó a los demás algoritmos alcanzando el mayor <strong>F1-Score Macro (10,42%)</strong> y una Exactitud Balanceada de <strong>34,46%</strong>, permitiendo clasificar de manera más equilibrada escenarios alternativos como vía pública, hospedajes y comercios.</p>
+        <p><strong>Random Forest:</strong> Alcanzó una exactitud balanceada similar (34,28%) y F1-Macro de 8,71%, pero requirió considerablemente mayor costo computacional de entrenamiento.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 2: Importancia de Variables -->
+    <article class="chart-story-card chart-wide">
+      <div class="card-header">
+        <div>
+          <h3>Importancia Relativa de Variables Predictoras (Random Forest)</h3>
+          <p class="card-subtitle">Peso relativo de las características en la reducción de impureza de Gini.</p>
+        </div>
+        <span class="chart-number">02</span>
+      </div>
+      <div id="pred-feature-importance" class="chart"></div>
+      <div class="story-box">
+        <h4>🤖 Interpretación de las Variables Más Predictivas</h4>
+        <p><strong>Variables dominantes:</strong> El <em>Año del hecho (10,4%)</em> es la variable de mayor peso, capturando las transformaciones estructurales del registro antes, durante y después de la pandemia. Le siguen la relación con el <em>Presunto Agresor</em> (desconocido vs conviviente), el <em>Factor Desencadenante (intolerancia, intoxicación, alcohol)</em> y el <em>Departamento</em>.</p>
+        <p><strong>Aplicación práctica:</strong> Cuando la agresión es cometida por una persona externa o bajo estado de intoxicación severa, la probabilidad de que el hecho ocurra en vía pública o establecimiento comercial aumenta notablemente respecto a la vivienda habitual.</p>
+      </div>
+    </article>
+  </div>
+
+  <!-- Tabla Detallada de Métricas de Evaluación -->
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Modelo Evaluado</th>
+          <th>Exactitud (Accuracy)</th>
+          <th>Exactitud Balanceada</th>
+          <th>F1-Score Macro</th>
+          <th>Precisión Macro</th>
+          <th>Sensibilidad (Recall Macro)</th>
+          <th>Diagnóstico Técnico</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in model_metrics %}
+        <tr>
+          <td><strong>{{ m.name }}</strong></td>
+          <td>{{ (m.accuracy * 100)|round(2) }}%</td>
+          <td>{{ (m.balanced_accuracy * 100)|round(2) }}%</td>
+          <td><span class="score-pill">{{ (m.f1_macro * 100)|round(2) }}%</span></td>
+          <td>{{ (m.get('precision_macro', 0) * 100)|round(2) }}%</td>
+          <td>{{ (m.get('recall_macro', 0) * 100)|round(2) }}%</td>
+          <td>
+            {% if 'Base' in m.name %}
+            <span class="tag-status tag-warning">Sesgo Severo (Solo Mayoritaria)</span>
+            {% elif 'Logística' in m.name %}
+            <span class="tag-status tag-success">Mejor F1-Macro y Balance</span>
+            {% else %}
+            <span class="tag-status tag-info">Buen Balance / Alto Cómputo</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  (function() {
+    const charts = {{ charts|tojson|safe }};
+    const config = {responsive: true, displayModeBar: false};
+    function plot(elemId, chartKey) {
+      if (!charts[chartKey]) return;
+      const parsed = JSON.parse(charts[chartKey]);
+      Plotly.newPlot(elemId, parsed.data, parsed.layout, config);
+    }
+    plot('pred-models-comparison', 'models_comparison');
+    plot('pred-feature-importance', 'feature_importance');
+  })();
+</script>

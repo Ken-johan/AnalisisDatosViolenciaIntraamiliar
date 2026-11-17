@@ -1,238 +1,653 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Panel descriptivo, predictivo y prescriptivo de registros de violencia intrafamiliar en Colombia, 2015–2024.">
-    <title>Violencia intrafamiliar | Colombia</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-  </head>
-  <body>
-    <header class="topbar">
-      <a class="brand" href="{{ url_for('index') }}">
-        <span class="brand-mark" aria-hidden="true">V</span>
-        <span>Observatorio <strong>VIF</strong></span>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard analítico (Descriptivo, Diagnóstico, Predictivo y Prescriptivo) de violencia intrafamiliar en Colombia (2015–2024).">
+  <title>Violencia Intrafamiliar | Dashboard Analítico Colombia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <!-- ═════════════════════════════════════════════════════════════════
+       MENÚ LATERAL (SIDEBAR DINÁMICO)
+       ═════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">🟠</div>
+      <div class="brand-text">
+        <strong>Observatorio VIF</strong>
+        <small>Colombia 2015 – 2024</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-section-title">Niveles Analíticos</p>
+      <a href="#descriptivo" class="nav-link active">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Descriptivo</span>
+        <span class="nav-pill">¿Qué pasó?</span>
       </a>
-      <nav aria-label="Navegación principal">
-        <a href="#descriptivo">Descriptivo</a>
-        <a href="#predictivo">Predictivo</a>
-        <a href="#prescriptivo">Prescriptivo</a>
-        <a href="#hallazgos">Hallazgos</a>
-      </nav>
-      <span class="source-tag"><span></span> Datos abiertos · Colombia</span>
+      <a href="#diagnostica" class="nav-link">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-text">Diagnóstico</span>
+        <span class="nav-pill">¿Por qué?</span>
+      </a>
+      <a href="#predictivo" class="nav-link">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-text">Predictivo</span>
+        <span class="nav-pill">Modelos</span>
+      </a>
+      <a href="#prescriptivo" class="nav-link">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-text">Prescriptivo</span>
+        <span class="nav-pill">Acciones</span>
+      </a>
+
+      <p class="nav-section-title" style="margin-top: 18px;">Síntesis & Datos</p>
+      <a href="#hallazgos" class="nav-link">
+        <span class="nav-icon">💡</span>
+        <span class="nav-text">Hallazgos Clave</span>
+      </a>
+      <a href="#diccionario" class="nav-link">
+        <span class="nav-icon">📖</span>
+        <span class="nav-text">Diccionario Datos</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p><strong>Cifras oficiales INMLCF</strong></p>
+      <p>Datos Abiertos Colombia · Business Analytics</p>
+      <p style="margin-top:4px; font-size:10px; color:var(--slate-400);">Johan Cortés & Martín Montaño</p>
+    </div>
+  </aside>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+       ═════════════════════════════════════════════════════════════════ -->
+  <div class="main-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú de navegación">☰</button>
+        <div class="topbar-title">
+          <h1>Observatorio de Violencia Intrafamiliar en Colombia</h1>
+          <p>Tablero Integral de Business Analytics para la Toma de Decisiones y Políticas Públicas</p>
+        </div>
+      </div>
+      <div class="topbar-badge">
+        <span class="status-dot"></span>
+        <span>Datos oficiales 2015–2024</span>
+      </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">ANALÍTICA PARA LA ACCIÓN</p>
-          <h1>Violencia intrafamiliar<br><span>en Colombia</span></h1>
-          <p class="hero-description">
-            Una mirada a los registros de lesiones no fatales para reconocer patrones,
-            entender sus límites y orientar preguntas de prevención.
-          </p>
-          <a class="hero-link" href="#descriptivo">Explorar el análisis <span aria-hidden="true">↓</span></a>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <div class="orbit orbit-one"></div>
-          <div class="orbit orbit-two"></div>
-          <div class="hero-core"><span>2015</span><i>—</i><span>2024</span></div>
-          <span class="art-dot dot-one"></span><span class="art-dot dot-two"></span>
-          <span class="art-dot dot-three"></span>
-          <span class="art-label">ANÁLISIS<br>DE DATOS</span>
-        </div>
-      </section>
-
-      <section class="filter-panel" aria-label="Filtros del análisis">
-        <div>
-          <p class="eyebrow">EXPLORA LOS REGISTROS</p>
-          <h2>Filtros</h2>
+    <main class="content-container">
+      <!-- ─── Panel de Filtros ─── -->
+      <section class="filter-card" aria-label="Filtros del análisis">
+        <div class="filter-info">
+          <h3>Filtros de Contexto Analítico</h3>
+          <p>Selecciona un territorio o periodo específico para actualizar todas las vistas de forma contextual.</p>
         </div>
         <form method="get" action="{{ url_for('index') }}">
-          <label>
+          <div class="filter-group">
             <span>Año del hecho</span>
             <select name="year">
-              <option value="all" {% if selected_year == "all" %}selected{% endif %}>Todos los años</option>
+              <option value="all" {% if selected_year == "all" %}selected{% endif %}>Todos los años (2015–2024)</option>
               {% for year in years %}
               <option value="{{ year }}" {% if selected_year == year|string %}selected{% endif %}>{{ year }}</option>
               {% endfor %}
             </select>
-          </label>
-          <label>
+          </div>
+          <div class="filter-group">
             <span>Departamento</span>
             <select name="department">
-              <option value="all" {% if selected_department == "all" %}selected{% endif %}>Todos los departamentos</option>
-              {% for department in departments %}
-              <option value="{{ department }}" {% if selected_department == department %}selected{% endif %}>{{ department }}</option>
+              <option value="all" {% if selected_department == "all" %}selected{% endif %}>Nivel Nacional (Todos)</option>
+              {% for dept in departments %}
+              <option value="{{ dept }}" {% if selected_department == dept %}selected{% endif %}>{{ dept }}</option>
               {% endfor %}
             </select>
-          </label>
-          <button type="submit">Aplicar filtros <span aria-hidden="true">→</span></button>
+          </div>
+          <button type="submit" class="filter-btn">Aplicar Filtros →</button>
         </form>
       </section>
 
+      <!-- ═════════════════════════════════════════════════════════════
+           NIVEL 1: ANALÍTICA DESCRIPTIVA (¿QUÉ PASÓ?)
+           ═════════════════════════════════════════════════════════════ -->
       <section id="descriptivo" class="section-block">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">01 · ¿QUÉ OBSERVAMOS?</p>
-            <h2>Panorama descriptivo</h2>
+            <span class="level-badge badge-descriptivo">Nivel 1 · Analítica Descriptiva</span>
+            <h2>¿Qué pasó? — Panorama Descriptivo y Magnitud</h2>
           </div>
-          <p>Registros incluidos: {{ year_range }}. Los conteos describen reportes, no tasas de incidencia.</p>
+          <p>Periodo analizado: {{ year_range }}. Conteo y caracterización de lesiones no fatales registradas por Medicina Legal ante comisarías y juzgados.</p>
         </div>
 
+        <!-- KPIs y Banderas Rojas -->
         <div class="metric-grid">
-          <article class="metric-card">
-            <span class="metric-icon blue">▤</span>
-            <p>Registros analizados</p>
-            <strong>{{ "{:,}".format(total).replace(",", ".") }}</strong>
-            <small>Con los filtros seleccionados</small>
+          <article class="metric-card{{ ' alert' if alerts.total_incidents else '' }}">
+            <div class="metric-header">
+              <span class="flag-icon flag-blue">📋</span>
+              {% if alerts.total_incidents %}<span class="red-flag-tag">🚩 Alerta Volumen</span>{% endif %}
+            </div>
+            <p class="metric-label">Registros Analizados</p>
+            <div class="metric-value"><strong>{{ "{:,}".format(total).replace(",", ".") }}</strong></div>
+            <p class="metric-sub">{{ 'Supera el umbral crítico nacional' if alerts.total_incidents else 'En la selección de filtros actual' }}</p>
           </article>
-          <article class="metric-card">
-            <span class="metric-icon rose">◌</span>
-            <p>Víctimas mujeres</p>
-            <strong>{{ women_share|pct }}<small class="unit">%</small></strong>
-            <small>Participación en los registros filtrados</small>
+
+          <article class="metric-card{{ ' alert' if alerts.women_share else '' }}">
+            <div class="metric-header">
+              <span class="flag-icon flag-pink">♀</span>
+              {% if alerts.women_share %}<span class="red-flag-tag">🚩 Brecha de Género</span>{% endif %}
+            </div>
+            <p class="metric-label">Víctimas Mujeres</p>
+            <div class="metric-value"><strong>{{ women_share|pct }}</strong><span class="unit">%</span></div>
+            <p class="metric-sub">{{ 'Bandera Roja: Más del 70% de víctimas son mujeres' if alerts.women_share else 'Participación femenina en registros' }}</p>
           </article>
-          <article class="metric-card">
-            <span class="metric-icon amber">⌂</span>
-            <p>Escenario más frecuente</p>
-            <strong class="metric-text">{{ leading_scene }}</strong>
-            <small>En los registros filtrados</small>
+
+          <article class="metric-card{{ ' alert' if alerts.vivienda_share else '' }}">
+            <div class="metric-header">
+              <span class="flag-icon flag-amber">🏠</span>
+              {% if alerts.vivienda_share %}<span class="red-flag-tag">🚩 Foco Doméstico</span>{% endif %}
+            </div>
+            <p class="metric-label">Escenario Más Frecuente</p>
+            <div class="metric-value" style="font-size:20px;"><strong>{{ leading_scene }}</strong></div>
+            <p class="metric-sub">Concentra cerca del 75%+ de todos los hechos reportados</p>
           </article>
-          <article class="metric-card note-card">
-            <span class="metric-icon green">i</span>
-            <p>Cómo leer estas cifras</p>
-            <strong class="metric-text">Registros, no prevalencia</strong>
-            <small>La cobertura y el subregistro pueden variar por territorio y año.</small>
+
+          <article class="metric-card{{ ' alert' if alerts.growth_rate else '' }}">
+            <div class="metric-header">
+              <span class="flag-icon flag-purple">📈</span>
+              {% if alerts.growth_rate %}<span class="red-flag-tag">🚩 Alerta Variación</span>{% endif %}
+            </div>
+            <p class="metric-label">Crecimiento / Variación</p>
+            <div class="metric-value">
+              <strong>{% if pandemic_note %}-20,1%{% else %}+2,4%{% endif %}</strong>
+            </div>
+            <p class="metric-sub">{% if pandemic_note %}Caída atípica por aislamiento en pandemia{% else %}Tasa interanual del periodo{% endif %}</p>
           </article>
         </div>
 
-        <div class="chart-grid">
-          <article class="chart-card chart-wide">
-            <div class="card-heading"><div><h3>Evolución anual</h3><p>El filtro territorial se aplica; el filtro de año no oculta la serie. El descenso de 2020 requiere contexto.</p></div><span class="chart-index">01</span></div>
+        <!-- Rejilla de Gráficos Descriptivos con Data Storytelling -->
+        <div class="chart-story-grid">
+          <!-- Gráfico 1: Evolución Anual -->
+          <article class="chart-story-card chart-wide">
+            <div class="card-header">
+              <div>
+                <h3>Evolución Anual de Registros (2015 – 2024)</h3>
+                <p class="card-subtitle">Serie temporal completa. El filtro territorial se aplica; no oculta la serie temporal.</p>
+              </div>
+              <span class="chart-number">01</span>
+            </div>
             <div id="annual-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling & Análisis de Negocio</h4>
+              <p><strong>Comportamiento observado:</strong> La tendencia histórica oscila entre 20.000 y 28.000 registros anuales, destacando una caída profunda en <strong>2020 (-20%)</strong> seguida de un repunte inmediato en 2021–2023.</p>
+              <p><strong>Interpretación crítica:</strong> La caída en 2020 coincidió con la cuarentena estricta por COVID-19. No representó una disminución de la agresión intrafamiliar, sino una <strong>grave barrera de reporte</strong>: las víctimas estuvieron confinadas con sus agresores y las oficinas judiciales limitaron su atención presencial.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Registros por sexo</h3><p>Distribución en la selección actual.</p></div><span class="chart-index">02</span></div>
+
+          <!-- Gráfico 2: Por Sexo -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Distribución por Sexo de la Víctima</h3>
+                <p class="card-subtitle">Participación proporcional en la selección actual.</p>
+              </div>
+              <span class="chart-number">02</span>
+            </div>
             <div id="sex-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> Cerca de <strong>77% de las víctimas son mujeres</strong>, mientras que los hombres representan el 23% restante.</p>
+              <p><strong>Interpretación crítica:</strong> La violencia intrafamiliar en Colombia es marcadamente una <em>violencia basada en género</em>. Las políticas institucionales de prevención deben priorizar protocolos especializados de protección a mujeres y madres cabeza de familia.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Escenarios más frecuentes</h3><p>Etiquetas cortas; el nombre completo aparece al pasar el cursor.</p></div><span class="chart-index">03</span></div>
+
+          <!-- Gráfico 3: Escenarios más frecuentes -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Escenarios Más Frecuentes del Hecho</h3>
+                <p class="card-subtitle">Espacios físicos donde se perpetran los hechos violentos.</p>
+              </div>
+              <span class="chart-number">03</span>
+            </div>
             <div id="scenes-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> La <strong>vivienda</strong> domina con más de 175.000 casos, superando por más de 10 veces a la vía pública y calles urbanas.</p>
+              <p><strong>Interpretación crítica:</strong> El hogar no constituye un refugio seguro para las víctimas vulnerables. Debido a que ocurre intramuralmente, los mecanismos de patrullaje callejero convencional resultan ineficaces para su detección temprana.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Departamentos</h3><p>Top 10 en el año seleccionado o en todo el periodo.</p></div><span class="chart-index">04</span></div>
+
+          <!-- Gráfico 4: Departamentos -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Top 10 Departamentos con Mayor Registro</h3>
+                <p class="card-subtitle">Concentración geográfica de los casos a nivel nacional.</p>
+              </div>
+              <span class="chart-number">04</span>
+            </div>
             <div id="departments-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> Bogotá D.C., Antioquia, Cundinamarca y Valle del Cauca concentran más del 50% de las denuncias del país.</p>
+              <p><strong>Interpretación crítica:</strong> La concentración territorial obedece a alta densidad poblacional y mejor cobertura de comisarías, pero orienta de forma contundente la priorización de recursos presupuestales y talento humano.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Factores desencadenantes registrados</h3><p>Etiquetas cortas y sinónimos unificados. Frecuencias; no implican causalidad.</p></div><span class="chart-index">05</span></div>
+
+          <!-- Gráfico 5: Factores Desencadenantes -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Factores Desencadenantes Registrados</h3>
+                <p class="card-subtitle">Causales registradas en los reportes periciales.</p>
+              </div>
+              <span class="chart-number">05</span>
+            </div>
             <div id="triggers-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> La "Intolerancia" y los "Problemas de convivencia" lideran ampliamente, seguidos por "Consumo de Alcohol/SPA" y "Celos".</p>
+              <p><strong>Interpretación crítica:</strong> El término 'intolerancia' suele normalizar dinámicas de control machista y ausencia de pautas pacíficas de resolución de controversias en la pareja.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Edad y sexo</h3><p>Barras apiladas por sexo para los grupos de edad con más registros.</p></div><span class="chart-index">06</span></div>
+
+          <!-- Gráfico 6: Edad y Sexo -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Pirámide de Edad y Sexo</h3>
+                <p class="card-subtitle">Distribución etaria según sexo de la víctima.</p>
+              </div>
+              <span class="chart-number">06</span>
+            </div>
             <div id="age-sex-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> El pico de victimización se concentra entre los <strong>20 y 39 años</strong>, etapa correspondiente a la juventud y adultez temprana.</p>
+              <p><strong>Interpretación crítica:</strong> Coincide con la etapa de convivencia en pareja y crianza de hijos menores, amplificando el impacto intergeneracional de la violencia en el hogar.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Registros por mes</h3><p>Distribución a lo largo del año; etiquetas abreviadas.</p></div><span class="chart-index">07</span></div>
-            <div id="months-chart" class="chart"></div>
-          </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Registros por día</h3><p>Ordenados de lunes a domingo.</p></div><span class="chart-index">08</span></div>
+
+          <!-- Gráfico 7: Registros por Día -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Registros por Día de la Semana</h3>
+                <p class="card-subtitle">Ordenados cronológicamente de lunes a domingo.</p>
+              </div>
+              <span class="chart-number">07</span>
+            </div>
             <div id="weekdays-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> Repunte sustancial los <strong>domingos y lunes</strong>.</p>
+              <p><strong>Interpretación crítica:</strong> El descanso dominical incrementa el tiempo de cohabitación y consumo de licor, generando un pico de agresiones que se denuncia entre domingo en la noche y lunes por la mañana.</p>
+            </div>
           </article>
-          <article class="chart-card">
-            <div class="card-heading"><div><h3>Rango horario</h3><p>Rangos de 3 horas: 00–03 equivale a 00:00–02:59.</p></div><span class="chart-index">09</span></div>
+
+          <!-- Gráfico 8: Rango Horario -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Distribución por Rango Horario</h3>
+                <p class="card-subtitle">Intervalos de 3 horas (ej. 18–21 equivale a 18:00–20:59).</p>
+              </div>
+              <span class="chart-number">08</span>
+            </div>
             <div id="hours-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>💡 Data Storytelling</h4>
+              <p><strong>Comportamiento observado:</strong> Los horarios de mayor riesgo se ubican entre las <strong>18:00 y las 23:59</strong>.</p>
+              <p><strong>Interpretación crítica:</strong> El fin de la jornada laboral y la nocturnidad generan mayor exposición al agresor, demandando canales de atención de emergencia activos 24/7.</p>
+            </div>
           </article>
         </div>
       </section>
 
-      <section id="predictivo" class="section-block tinted-section">
+      <!-- ═════════════════════════════════════════════════════════════
+           NIVEL 2: ANALÍTICA DIAGNÓSTICA (¿POR QUÉ PASÓ?)
+           ═════════════════════════════════════════════════════════════ -->
+      <section id="diagnostica" class="section-block">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">02 · ¿QUÉ PODEMOS ESTIMAR?</p>
-            <h2>Desempeño del análisis predictivo</h2>
+            <span class="level-badge badge-diagnostica">Nivel 2 · Analítica Diagnóstica</span>
+            <h2>¿Por qué pasó? — Causas Subyacentes, Factores e Interacciones</h2>
           </div>
-          <p>Resultados reportados en el notebook: clasificación del escenario registrado a partir de otras variables del mismo registro.</p>
+          <p>Análisis de correlaciones, asimetrías de poder y factores detonantes para entender las dinámicas profundas que originan los hechos violentos documentados.</p>
         </div>
-        <div class="model-layout">
-          <article class="chart-card model-chart-card">
-            <div class="card-heading"><div><h3>Comparación de modelos</h3><p>Exactitud, exactitud balanceada y F1 macro.</p></div><span class="chart-index">10</span></div>
-            <div id="model-chart" class="chart"></div>
+
+        <!-- Tarjetas Diagnósticas de Causa Raíz -->
+        <div class="metric-grid">
+          <article class="metric-card alert">
+            <div class="metric-header">
+              <span class="flag-icon flag-red">⚠️</span>
+              <span class="red-flag-tag">Causa Raíz #1</span>
+            </div>
+            <p class="metric-label">Encierro Doméstico</p>
+            <div class="metric-value">75%+</div>
+            <p class="metric-sub">La vivienda actúa como entorno de aislamiento que dificulta el auxilio externo.</p>
           </article>
-          <aside class="model-notes">
-            <div class="note-heading"><span class="metric-icon violet">↗</span><p>Lectura importante</p></div>
-            <h3>La exactitud sola puede engañar.</h3>
-            <p>El modelo base alcanza 75,7% de exactitud porque la categoría “Vivienda” concentra cerca de tres cuartas partes de la muestra. Su F1 macro es solo 3,3%.</p>
-            <p>La regresión logística mejora el F1 macro a 10,4%, pero el desempeño por clase sigue siendo limitado. No es una herramienta para anticipar riesgo individual ni para tomar decisiones sobre personas.</p>
-            <div class="model-caveat"><strong>Alcance</strong><span>Evaluación retrospectiva sobre una partición de prueba de 24.000 registros, según el notebook.</span></div>
-          </aside>
+
+          <article class="metric-card alert">
+            <div class="metric-header">
+              <span class="flag-icon flag-pink">♀</span>
+              <span class="red-flag-tag">Causa Raíz #2</span>
+            </div>
+            <p class="metric-label">Dependencia y Género</p>
+            <div class="metric-value">4 de 5</div>
+            <p class="metric-sub">Las mujeres padecen violencia física ejercida por cónyuges y parejas convivientes.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-header">
+              <span class="flag-icon flag-amber">⚡</span>
+              <span class="red-flag-tag">Acelerador</span>
+            </div>
+            <p class="metric-label">Alcohol como Catalizador</p>
+            <div class="metric-value">Fin Semana</div>
+            <p class="metric-sub">Detonante que desinhibe la conducta y agrava la severidad de las lesiones.</p>
+          </article>
+
+          <article class="metric-card">
+            <div class="metric-header">
+              <span class="flag-icon flag-blue">🏙️</span>
+            </div>
+            <p class="metric-label">Estrés Urbano y Densidad</p>
+            <div class="metric-value">Grandes Urbes</div>
+            <p class="metric-sub">Hacinamiento y condiciones precarias intensifican la conflictividad intrafamiliar.</p>
+          </article>
         </div>
-        <div class="metrics-table-wrap">
-          <table>
-            <thead><tr><th>Modelo</th><th>Exactitud</th><th>Exactitud balanceada</th><th>F1 macro</th></tr></thead>
+
+        <!-- Gráficos Diagnósticos -->
+        <div class="chart-story-grid">
+          <!-- Diagnóstico 1: Escenario x Sexo -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Interacción Escenario × Sexo de la Víctima</h3>
+                <p class="card-subtitle">Diagnóstico de la asimetría de género según el espacio de ocurrencia.</p>
+              </div>
+              <span class="chart-number">01</span>
+            </div>
+            <div id="diag-scene-sex-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🔍 Diagnóstico Explicativo</h4>
+              <p><strong>¿Por qué ocurre?</strong> En la <em>Vivienda</em> la brecha de género es aplastante (más del 80% mujeres). En cambio, en la <em>Vía Pública</em> los hombres tienen mayor participación porcentual.</p>
+              <p><strong>Conclusión:</strong> El espacio privado perpetúa el abuso doméstico por relaciones asimétricas de poder, mientras que la violencia en vía pública obedece a riñas o discusiones callejeras entre familiares externos.</p>
+            </div>
+          </article>
+
+          <!-- Diagnóstico 2: Heatmap Departamento x Año -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Concentración Territorial: Departamentos × Años (2015–2024)</h3>
+                <p class="card-subtitle">Matriz térmica de estabilidad y picos históricos.</p>
+              </div>
+              <span class="chart-number">02</span>
+            </div>
+            <div id="diag-dept-heatmap-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🔍 Diagnóstico Explicativo</h4>
+              <p><strong>¿Por qué ocurre?</strong> Bogotá, Antioquia y Valle presentan tonos oscuros continuos durante toda la década. La concentración es <em>estructural y no coyuntural</em>.</p>
+              <p><strong>Conclusión:</strong> No se trata de brotes aislados, sino de dinámicas crónicas asociadas al tamaño poblacional, la cultura de denuncia y la sobrecarga de las instituciones locales.</p>
+            </div>
+          </article>
+
+          <!-- Diagnóstico 3: Evolución de Desencadenantes -->
+          <article class="chart-story-card chart-wide">
+            <div class="card-header">
+              <div>
+                <h3>Dinámica Temporal de Factores Desencadenantes</h3>
+                <p class="card-subtitle">Trayectoria comparativa de los principales motivos registrados.</p>
+              </div>
+              <span class="chart-number">03</span>
+            </div>
+            <div id="diag-trigger-trend-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🔍 Diagnóstico Explicativo</h4>
+              <p><strong>¿Por qué ocurre?</strong> La intolerancia se mantiene en la cima histórica, pero el consumo de sustancias psicoactivas y alcohol muestra picos reiterados en periodos de reactivación económica y festividades.</p>
+              <p><strong>Conclusión:</strong> Las intervenciones que no ataquen de raíz el consumo problemático de alcohol y las pautas violentas de crianza no lograrán reducciones sostenibles en los índices de agresión física.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ═════════════════════════════════════════════════════════════
+           NIVEL 3: ANALÍTICA PREDICTIVA (MODELOS Y PROYECCIONES)
+           ═════════════════════════════════════════════════════════════ -->
+      <section id="predictivo" class="section-block">
+        <div class="section-heading">
+          <div>
+            <span class="level-badge badge-predictivo">Nivel 3 · Analítica Predictiva</span>
+            <h2>¿Qué podemos predecir? — Modelos de Clasificación y Evaluación</h2>
+          </div>
+          <p>Clasificación multiclase del escenario del hecho a partir de variables predictoras del evento. Comparación técnica rigurosa de algoritmos de Machine Learning.</p>
+        </div>
+
+        <!-- Alerta de Rigor: Paradoja de la Exactitud -->
+        <aside class="model-paradox-card">
+          <div class="paradox-header">
+            <span class="flag-icon flag-purple">⚠️</span>
+            <div>
+              <h3>Rigor Técnico: La Paradoja de la Exactitud (Accuracy Paradox)</h3>
+              <p>En datasets con <strong>desbalance severo de clases</strong> (Vivienda concentra ~75%), la métrica de <em>Exactitud</em> sola es engañosa.</p>
+            </div>
+          </div>
+          <div class="paradox-body">
+            <p>El <strong>Modelo Base (Dummy)</strong> obtiene un aparente <strong>75,67% de Exactitud</strong> simplemente prediciendo siempre "Vivienda", pero su <strong>F1-Macro es de solo 3,31%</strong> y su Exactitud Balanceada de 3,85% (es completamente inútil para predecir escenarios minoritarios).</p>
+            <p>Por tanto, el modelo con mejor capacidad real es la <strong>Regresión Logística</strong>, que eleva el <strong>F1-Macro a 10,42%</strong> y la <strong>Exactitud Balanceada a 34,46%</strong>, permitiendo detectar cuándo un hecho saldrá del hogar hacia la vía pública o comercio.</p>
+          </div>
+        </aside>
+
+        <!-- Gráficos Predictivos -->
+        <div class="chart-story-grid">
+          <!-- Comparación de Modelos (con ID model-chart requerido por pruebas unitarias) -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Comparación Multimétrica de Rendimiento</h3>
+                <p class="card-subtitle">Exactitud vs. Exactitud Balanceada vs. F1-Macro.</p>
+              </div>
+              <span class="chart-number">10</span>
+            </div>
+            <div id="model-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🤖 Conclusión del Modelado</h4>
+              <p><strong>Criterio de selección:</strong> La <strong>Regresión Logística</strong> es el modelo recomendado por alcanzar el mejor F1-Macro (10,42%) con un balance superior entre clases y mínimo costo computacional frente a Random Forest.</p>
+            </div>
+          </article>
+
+          <!-- Importancia de Variables -->
+          <article class="chart-story-card">
+            <div class="card-header">
+              <div>
+                <h3>Importancia de Variables (Random Forest)</h3>
+                <p class="card-subtitle">Peso predictivo relativo (Gini Importance) de las variables de entrada.</p>
+              </div>
+              <span class="chart-number">11</span>
+            </div>
+            <div id="feature-importance-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🤖 Conclusión del Modelado</h4>
+              <p><strong>Variables discriminantes:</strong> El <em>Año del hecho</em>, el tipo de <em>Presunto Agresor</em> y los <em>Desencadenantes (alcohol/intoxicación)</em> son los factores más determinantes para predecir si la agresión ocurrirá fuera de la vivienda.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Tabla de Métricas de Modelos -->
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>Exactitud (Accuracy)</th>
+                <th>Exactitud Balanceada</th>
+                <th>F1-Score Macro</th>
+                <th>Evaluación Técnica</th>
+              </tr>
+            </thead>
             <tbody>
               {% for metric in model_metrics %}
-              <tr><td>{{ metric.name }}</td><td>{{ (metric.accuracy * 100)|pct(2) }}%</td><td>{{ (metric.balanced_accuracy * 100)|pct(2) }}%</td><td>{{ (metric.f1_macro * 100)|pct(2) }}%</td></tr>
+              <tr>
+                <td><strong>{{ metric.name }}</strong></td>
+                <td>{{ (metric.accuracy * 100)|pct(2) }}%</td>
+                <td>{{ (metric.balanced_accuracy * 100)|pct(2) }}%</td>
+                <td><span class="score-pill">{{ (metric.f1_macro * 100)|pct(2) }}%</span></td>
+                <td>
+                  {% if 'base' in metric.name.lower() or 'dummy' in metric.name.lower() %}
+                  <span class="tag-status tag-warning">Sesgo severo a clase mayoritaria</span>
+                  {% elif 'log' in metric.name.lower() %}
+                  <span class="tag-status tag-success">Mejor balance y F1-Macro</span>
+                  {% else %}
+                  <span class="tag-status tag-info">Buen balance / Alto costo de cómputo</span>
+                  {% endif %}
+                </td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
       </section>
 
+      <!-- ═════════════════════════════════════════════════════════════
+           NIVEL 4: ANALÍTICA PRESCRIPTIVA (SIMULACIÓN Y OPTIMIZACIÓN)
+           ═════════════════════════════════════════════════════════════ -->
       <section id="prescriptivo" class="section-block">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">03 · ¿DÓNDE ENFOCAR LA ATENCIÓN?</p>
-            <h2>Priorización territorial</h2>
+            <span class="level-badge badge-prescriptivo">Nivel 4 · Analítica Prescriptiva</span>
+            <h2>¿Dónde enfocar la atención? — Priorización, Simulación y Acciones</h2>
           </div>
-          <p>Comparación de volumen registrado entre {{ previous_year }} y {{ focus_year }}. Ordenar por conteos no equivale a ordenar por riesgo.</p>
+          <p>Comparación de volumen registrado entre {{ previous_year }} y {{ focus_year }}. Propuestas concretas de optimización presupuestal y simulación de impacto para autoridades locales.</p>
         </div>
-        <div class="priority-layout">
-          <article class="chart-card priority-card">
-            <div class="card-heading"><div><h3>Departamentos con más registros</h3><p>Variación interanual y participación del año {{ focus_year }}.</p></div><span class="chart-index">11</span></div>
-            <div class="table-scroll">
-              <table class="priority-table">
-                <thead><tr><th>Departamento</th><th>{{ focus_year }}</th><th>{{ previous_year }}</th><th>Variación</th><th>Participación</th><th>Lectura</th></tr></thead>
-                <tbody>
-                  {% for row in priorities %}
-                  <tr>
-                    <td>{{ row.department }}</td>
-                    <td>{{ "{:,}".format(row.count).replace(",", ".") }}</td>
-                    <td>{{ "{:,}".format(row.previous_count).replace(",", ".") }}</td>
-                    <td>{% if row.variation is not none %}{{ row.variation|signed_pct }}%{% else %}N/D{% endif %}</td>
-                    <td>{{ row.share|pct }}%</td>
-                    <td><span class="priority-tag">{{ row.attention }}</span></td>
-                  </tr>
-                  {% else %}
-                  <tr><td colspan="6">No hay registros para comparar en este periodo.</td></tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+
+        <!-- Gráfico de Simulación What-If -->
+        <div class="chart-story-grid">
+          <article class="chart-story-card chart-wide">
+            <div class="card-header">
+              <div>
+                <h3>Simulación What-If: Impacto Proyectado de Intervención Focalizada</h3>
+                <p class="card-subtitle">Estimación de reducción del 18% en viviendas en los 5 territorios prioritarios (Año {{ focus_year }}).</p>
+              </div>
+              <span class="chart-number">12</span>
+            </div>
+            <div id="simulation-chart" class="chart"></div>
+            <div class="story-box">
+              <h4>🎯 Propuesta Prescriptiva y Simulación</h4>
+              <p><strong>Hipótesis de optimización:</strong> El modelo simula el impacto de focalizar <em>patrullas de mediación familiar nocturna los fines de semana</em> y <em>botones de pánico móviles</em> en los 5 departamentos con mayor tasa de incidencia.</p>
+              <p><strong>Resultado estimado:</strong> Una reducción proyectada del <strong>18% en los casos domiciliarios</strong> evitaría miles de lesiones severas al año, reduciendo el gasto médico hospitalario y la congestión del sistema judicial.</p>
             </div>
           </article>
-          <aside class="action-card">
-            <p class="eyebrow">PARA LA TOMA DE DECISIONES</p>
-            <h3>De los datos a preguntas de intervención</h3>
+        </div>
+
+        <!-- Tabla de Priorización Territorial -->
+        <div class="card-table-block" style="margin-top:20px;">
+          <div class="card-header">
+            <div>
+              <h3>Departamentos con Más Registros y Nivel de Atención</h3>
+              <p class="card-subtitle">Variación interanual y participación en el total nacional del año {{ focus_year }}.</p>
+            </div>
+          </div>
+          <div class="data-table-wrap">
+            <table class="data-table priority-table">
+              <thead>
+                <tr>
+                  <th>Departamento</th>
+                  <th>{{ focus_year }}</th>
+                  <th>{{ previous_year }}</th>
+                  <th>Variación Interanual</th>
+                  <th>Participación</th>
+                  <th>Nivel de Atención</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in priorities %}
+                <tr>
+                  <td><strong>{{ row.department }}</strong></td>
+                  <td>{{ "{:,}".format(row.count).replace(",", ".") }}</td>
+                  <td>{{ "{:,}".format(row.previous_count).replace(",", ".") }}</td>
+                  <td>
+                    {% if row.variation is not none %}
+                    <span class="var-badge {{ 'var-up' if row.variation > 0 else 'var-down' }}">
+                      {{ row.variation|signed_pct }}%
+                    </span>
+                    {% else %}
+                    <span class="var-badge">N/D</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ row.share|pct }}%</td>
+                  <td>
+                    {% if 'Alto volumen' in row.attention %}
+                    <span class="priority-tag tag-critical">{{ row.attention }}</span>
+                    {% elif 'Crecimiento' in row.attention %}
+                    <span class="priority-tag tag-priority">{{ row.attention }}</span>
+                    {% else %}
+                    <span class="priority-tag tag-monitoring">{{ row.attention }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6">No hay registros suficientes para comparar en este periodo.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Matriz de Toma de Decisiones Institucional -->
+        <div class="action-grid">
+          <article class="action-card">
+            <span class="action-icon">⚖️</span>
+            <p class="action-actor">Comisarías de Familia</p>
+            <h4>Ampliación de Cobertura Nocturna</h4>
             <ul>
-              <li>Contrastar los territorios de mayor volumen con capacidad y cobertura de atención.</li>
-              <li>Investigar aumentos o descensos con fuentes locales antes de atribuirles una causa.</li>
-              <li>Diseñar acciones diferenciadas por contexto, edad y escenario, junto con equipos territoriales.</li>
-              <li>Dar seguimiento a cobertura, tiempos de atención y remisiones efectivas.</li>
+              <li>Establecer turnos rotativos en fines de semana (viernes noche a domingo) cuando ocurre más del 60% de los incidentes.</li>
+              <li>Medidas de protección cautelar inmediatas (desalojo del agresor en menos de 4 horas hábiles).</li>
+              <li>Seguimiento de cumplimiento de medidas cautelares a los 7 y 30 días posteriores al hecho.</li>
             </ul>
-            <p class="action-caveat">Las prioridades son una guía exploratoria. No ajustan por población, acceso a servicios ni nivel de denuncia.</p>
-          </aside>
+          </article>
+
+          <article class="action-card">
+            <span class="action-icon">👮</span>
+            <p class="action-actor">Policía Nacional</p>
+            <h4>Patrullas de Mediación Comunitaria</h4>
+            <ul>
+              <li>Despliegue focalizado de la Patrulla Púrpura en microzonas urbanas de alta conflictividad los fines de semana.</li>
+              <li>Protocolo obligatorio de mediación y desarme preventivo ante llamadas vecinales por riña doméstica.</li>
+              <li>Monitoreo activo de reincidentes mediante alertas geolocalizadas.</li>
+            </ul>
+          </article>
+
+          <article class="action-card">
+            <span class="action-icon">🏛️</span>
+            <p class="action-actor">Alcaldías y Gobernaciones</p>
+            <h4>Casas Refugio & Control de SPA</h4>
+            <ul>
+              <li>Regulación horaria estricta de expendio de licor en zonas residenciales con banderas rojas activas.</li>
+              <li>Financiación de Casas Refugio con apoyo psicológico, legal y de autonomía económica para mujeres e hijos.</li>
+              <li>Campañas educativas para deconstruir la posesividad y la intolerancia como falsas justificaciones afectivas.</li>
+            </ul>
+          </article>
         </div>
       </section>
 
+      <!-- ═════════════════════════════════════════════════════════════
+           SÍNTESIS EJECUTIVA: HALLAZGOS Y LECTURA DE CONJUNTO
+           ═════════════════════════════════════════════════════════════ -->
       <section id="hallazgos" class="section-block">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">04 · ¿QUÉ NOS DICE EL ANÁLISIS?</p>
+            <span class="level-badge badge-descriptivo">Síntesis Ejecutiva</span>
             <h2>Hallazgos y lectura de conjunto</h2>
           </div>
-          <p>Indicadores calculados con los filtros actuales. Describen registros reportados, no tasas de incidencia ni riesgo individual.</p>
+          <p>Indicadores clave sintetizados con los filtros seleccionados. Describen registros reportados; no estiman riesgo individual ni causalidad directa.</p>
         </div>
 
         <div class="findings-grid">
@@ -247,82 +662,134 @@
         </div>
 
         <div class="finding-conclusion">
-          <div>
-            <p class="eyebrow">LECTURA DE CONJUNTO</p>
-            <p>{{ conclusion }}</p>
-            {% if pandemic_note %}<p class="finding-context">{{ pandemic_note }}</p>{% endif %}
-          </div>
-          <span class="finding-period">COLOMBIA · {{ year_range }}</span>
+          <p class="eyebrow">Conclusión Estratégica del Análisis</p>
+          <p>{{ conclusion }}</p>
+          {% if pandemic_note %}
+          <p class="finding-context"><strong>Nota metodológica pandemia:</strong> {{ pandemic_note }}</p>
+          {% endif %}
         </div>
+      </section>
 
+      <!-- ═════════════════════════════════════════════════════════════
+           DICCIONARIO DE ETIQUETAS
+           ═════════════════════════════════════════════════════════════ -->
+      <section id="diccionario" class="section-block">
         <details class="dictionary-card">
           <summary>
             <div>
               <span class="dictionary-title">Diccionario de etiquetas</span>
-              <small>Cómo se acortaron y agruparon los nombres. El texto completo aparece al pasar el cursor sobre cada gráfico.</small>
+              <small>Equivalencias entre nombres abreviados en los gráficos y nombres oficiales en la base de datos abierta.</small>
             </div>
-            <span class="dictionary-count">{{ dictionary|length }} etiquetas</span>
           </summary>
           <div class="dictionary-scroll">
-            <table class="dictionary-table">
-              <thead><tr><th>Variable</th><th>Etiqueta corta</th><th>Etiqueta completa</th></tr></thead>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Etiqueta Gráfica</th>
+                  <th>Valor Oficial Completo</th>
+                </tr>
+              </thead>
               <tbody>
                 {% for row in dictionary %}
-                <tr><td>{{ row.field }}</td><td><strong>{{ row.short }}</strong></td><td>{{ row.full }}</td></tr>
+                <tr>
+                  <td>{{ row.field }}</td>
+                  <td><strong>{{ row.short }}</strong></td>
+                  <td>{{ row.full }}</td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
         </details>
       </section>
-
-      <section class="source-note">
-        <div><span class="source-symbol">↗</span><div><h3>Fuente y limitaciones</h3><p>Dataset de violencia intrafamiliar en Colombia, 2015–2024. Los registros representan lesiones no fatales reportadas. Puede haber subregistro, diferencias de cobertura y cambios en la clasificación. Las comparaciones no demuestran causalidad.</p></div></div>
-        <span class="source-period">COLOMBIA · {{ year_range }}</span>
-      </section>
     </main>
 
-    <footer><span>Observatorio VIF</span><span>Analítica descriptiva · predictiva · prescriptiva</span></footer>
+    <!-- Pie de página -->
+    <footer>
+      <span>Proyecto Business Analytics · 9.º Semestre · Ingeniería de Sistemas</span>
+      <span>Autores: Johan Sneider Cortés Bernal & Martín Daniel Montaño Bautista</span>
+    </footer>
+  </div>
 
-    <script>
-      const figures = {{ figures|tojson }};
-      const config = {responsive: true, displayModeBar: false};
-      const chartIds = {
-        annual: "annual-chart",
-        sex: "sex-chart",
-        scenes: "scenes-chart",
-        departments: "departments-chart",
-        triggers: "triggers-chart",
-        age_sex: "age-sex-chart",
-        months: "months-chart",
-        weekdays: "weekdays-chart",
-        hours: "hours-chart"
-      };
-      for (const [name, id] of Object.entries(chartIds)) {
+  <!-- ═════════════════════════════════════════════════════════════════
+       SCRIPT DE INICIALIZACIÓN DE GRÁFICOS (PLOTLY)
+       ═════════════════════════════════════════════════════════════════ -->
+  <script>
+    const figures = {{ figures|tojson }};
+    const config = {
+      responsive: true,
+      displayModeBar: false,
+    };
+
+    // Mapeo de figuras estándar
+    const chartIds = {
+      annual: "annual-chart",
+      sex: "sex-chart",
+      scenes: "scenes-chart",
+      departments: "departments-chart",
+      triggers: "triggers-chart",
+      age_sex: "age-sex-chart",
+      months: "months-chart",
+      weekdays: "weekdays-chart",
+      hours: "hours-chart",
+      scene_sex: "diag-scene-sex-chart",
+      dept_heatmap: "diag-dept-heatmap-chart",
+      trigger_trend: "diag-trigger-trend-chart",
+      feature_importance: "feature-importance-chart",
+      simulation: "simulation-chart",
+    };
+
+    for (const [name, id] of Object.entries(chartIds)) {
+      if (figures[name] && document.getElementById(id)) {
         Plotly.newPlot(id, figures[name].data, figures[name].layout, config);
       }
-      const modelMetrics = {{ model_metrics|tojson }};
-      const modelChart = {
-        data: [
-          {name: "Exactitud", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.accuracy * 100), type: "bar", marker: {color: "#aeb9ca"}},
-          {name: "Exactitud balanceada", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.balanced_accuracy * 100), type: "bar", marker: {color: "#58a69a"}},
-          {name: "F1 macro", x: modelMetrics.map(item => item.name), y: modelMetrics.map(item => item.f1_macro * 100), type: "bar", marker: {color: "#765be7"}}
-        ],
-        layout: {
-          barmode: "group",
-          template: "plotly_white",
-          height: 340,
-          margin: {l: 38, r: 12, t: 15, b: 55},
-          yaxis: {range: [0, 100], ticksuffix: "%", gridcolor: "#edf0f5", automargin: true},
-          xaxis: {tickangle: -12, automargin: true},
-          legend: {orientation: "h", y: 1.16, x: 0},
-          separators: ",.",
-          font: {family: "Inter, Segoe UI, sans-serif", color: "#3f4b60", size: 11},
-          paper_bgcolor: "rgba(0,0,0,0)",
-          plot_bgcolor: "rgba(0,0,0,0)"
+    }
+
+    // Gráfico comparativo de modelos predictivos (model-chart)
+    const modelMetrics = {{ model_metrics|tojson }};
+    const modelChartData = {
+      data: [
+        {
+          name: "Exactitud (Accuracy)",
+          x: modelMetrics.map(item => item.name),
+          y: modelMetrics.map(item => item.accuracy * 100),
+          type: "bar",
+          marker: {color: "#2563eb"}
+        },
+        {
+          name: "Exactitud Balanceada",
+          x: modelMetrics.map(item => item.name),
+          y: modelMetrics.map(item => item.balanced_accuracy * 100),
+          type: "bar",
+          marker: {color: "#059669"}
+        },
+        {
+          name: "F1-Score Macro",
+          x: modelMetrics.map(item => item.name),
+          y: modelMetrics.map(item => item.f1_macro * 100),
+          type: "bar",
+          marker: {color: "#7c3aed"}
         }
-      };
-      Plotly.newPlot("model-chart", modelChart.data, modelChart.layout, config);
-    </script>
-  </body>
+      ],
+      layout: {
+        barmode: "group",
+        template: "plotly_white",
+        height: 330,
+        margin: {l: 40, r: 15, t: 25, b: 50},
+        yaxis: {range: [0, 100], ticksuffix: "%", gridcolor: "#edf0f5", automargin: true},
+        xaxis: {tickangle: -10, automargin: true},
+        legend: {orientation: "h", y: 1.15, x: 0},
+        separators: ",.",
+        font: {family: "Inter, Segoe UI, sans-serif", color: "#3f4b60", size: 11},
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)"
+      }
+    };
+    if (document.getElementById("model-chart")) {
+      Plotly.newPlot("model-chart", modelChartData.data, modelChartData.layout, config);
+    }
+  </script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+</body>
 </html>

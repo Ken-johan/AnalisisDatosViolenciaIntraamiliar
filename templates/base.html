@@ -3,24 +3,75 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Violencia intrafamiliar | Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script src="{{ url_for('static', filename='sidebar.js') }}" defer></script>
+  <title>Violencia intrafamiliar | Dashboard Analítico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 </head>
 <body>
-  <aside class="sidebar">
-    <nav>
-      <ul>
-        <li><a href="#" data-endpoint="/descriptivo/">Descriptivo</a></li>
-        <li><a href="#" data-endpoint="/diagnostica/">Diagnóstica</a></li>
-        <li><a href="#" data-endpoint="/predictivo/">Predictivo</a></li>
-        <li><a href="#" data-endpoint="/prescriptivo/">Prescriptivo</a></li>
-      </ul>
+  <!-- ───── Sidebar ───── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🟠</span>
+      <div>
+        <strong>Observatorio VIF</strong>
+        <small>Colombia 2015 – 2024</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-label">MÓDULOS ANALÍTICOS</p>
+      <a href="#" class="nav-link active" data-endpoint="/descriptivo/">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Descriptivo</span>
+        <span class="nav-badge">¿Qué pasó?</span>
+      </a>
+      <a href="#" class="nav-link" data-endpoint="/diagnostica/">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-text">Diagnóstico</span>
+        <span class="nav-badge">¿Por qué?</span>
+      </a>
+      <a href="#" class="nav-link" data-endpoint="/predictivo/">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-text">Predictivo</span>
+        <span class="nav-badge">Modelos</span>
+      </a>
+      <a href="#" class="nav-link" data-endpoint="/prescriptivo/">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-text">Prescriptivo</span>
+        <span class="nav-badge">Acciones</span>
+      </a>
     </nav>
+
+    <div class="sidebar-footer">
+      <small>Datos: INMLCF · Datos Abiertos</small>
+      <small>Proyecto Business Analytics</small>
+    </div>
   </aside>
-  <main id="main-panel">
-    <!-- Content loaded via AJAX -->
-    <div class="loading">Cargando…</div>
-  </main>
+
+  <!-- ───── Main Content ───── -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+      <div class="topbar-title">
+        <h1>Dashboard Analítico</h1>
+        <span class="topbar-subtitle">Violencia Intrafamiliar · Colombia</span>
+      </div>
+      <div class="topbar-badge">
+        <span class="status-dot"></span>
+        Datos abiertos
+      </div>
+    </header>
+
+    <main id="main-panel">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando módulo descriptivo…</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
 </body>
 </html>

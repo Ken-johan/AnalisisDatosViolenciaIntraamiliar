@@ -1,10 +1,13 @@
 kpis:
   total_incidents:
-    description: "Total registros analizados"
-    threshold: 500000  # alert if exceeds (example)
+    description: "Total registros analizados (alerta de volumen alto nacional)"
+    threshold: 200000
   women_share:
-    description: "% de víctimas mujeres"
-    threshold: 70  # alert if >70%
+    description: "% de víctimas mujeres (bandera roja de género)"
+    threshold: 70.0
   growth_rate:
-    description: "Crecimiento interanual de incidentes (%)"
-    threshold: 10  # alert if growth >10%
+    description: "Crecimiento interanual acelerado (%)"
+    threshold: 10.0
+  vivienda_share:
+    description: "% de incidentes en vivienda (bandera roja entorno doméstico)"
+    threshold: 75.0

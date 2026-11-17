@@ -1,139 +1,196 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Descriptivo | Violencia intrafamiliar</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-</head>
-<body>
-  <section id="descriptivo" class="section-block">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">01 · ¿QUÉ OBSERVAMOS?</p>
-        <h2>Panorama descriptivo</h2>
+<!-- Módulo 1: Analítica Descriptiva (¿Qué pasó?) -->
+<section id="descriptivo" class="section-block">
+  <div class="section-heading">
+    <div>
+      <span class="level-badge badge-descriptivo">Nivel 1 · Analítica Descriptiva</span>
+      <h2>¿Qué pasó? — Magnitud, Evolución y Patrones</h2>
+    </div>
+    <p>Caracterización retrospectiva de los registros oficiales de violencia intrafamiliar en Colombia (2015–2024). Los conteos describen hechos reportados ante las autoridades competentes, no prevalencia real.</p>
+  </div>
+
+  <!-- KPIs y Banderas Rojas -->
+  <div class="metric-grid">
+    <article class="metric-card{{ ' alert' if alerts.total_incidents else '' }}">
+      <div class="metric-header">
+        <span class="flag-icon flag-blue">📋</span>
+        {% if alerts.total_incidents %}<span class="red-flag-tag">🚩 Alerta Volumen</span>{% endif %}
       </div>
-      <p>Registros incluidos: {{ year_range }}. Los conteos describen reportes, no tasas de incidencia.</p>
-    </div>
-    <div class="metric-grid">
-      <article class="metric-card{% if alerts.total_incidents %} alert{% endif %}">
-        <span class="metric-icon blue">▤</span>
-        <p>Registros analizados</p>
-        <strong>{{ "{:,}".format(total).replace(",", ".") }}</strong>
-        <small>Con los filtros seleccionados</small>
-      </article>
-      <article class="metric-card">
-        <span class="metric-icon rose">◌</span>
-        <p>Víctimas mujeres</p>
-        <strong>{{ women_share|pct }}<small class="unit">%</small></strong>
-        <small>Participación en los registros filtrados</small>
-      </article>
-      <article class="metric-card">
-        <span class="metric-icon amber">⌂</span>
-        <p>Escenario más frecuente</p>
-        <strong class="metric-text">{{ leading_scene }}</strong>
-        <small>En los registros filtrados</small>
-      </article>
-      <article class="metric-card note-card">
-        <span class="metric-icon green">i</span>
-        <p>Cómo leer estas cifras</p>
-        <strong class="metric-text">Registros, no prevalencia</strong>
-        <small>La cobertura y el subregistro pueden variar por territorio y año.</small>
-      </article>
-    </div>
-    <div class="chart-grid">
-      <article class="chart-card chart-wide">
-        <div class="card-heading">
-          <div>
-            <h3>Evolución anual</h3>
-            <p>El filtro territorial se aplica; el filtro de año no oculta la serie. El descenso de 2020 requiere contexto.</p>
-          </div>
-          <span class="chart-index">01</span>
+      <p class="metric-label">Total Registros Analizados</p>
+      <div class="metric-value">{{ "{:,}".format(total).replace(",", ".") }}</div>
+      <p class="metric-sub">{{ 'Supera el umbral de alerta crítica' if alerts.total_incidents else 'En la selección actual' }}</p>
+    </article>
+
+    <article class="metric-card{{ ' alert' if alerts.women_share else '' }}">
+      <div class="metric-header">
+        <span class="flag-icon flag-pink">♀</span>
+        {% if alerts.women_share %}<span class="red-flag-tag">🚩 Brecha de Género</span>{% endif %}
+      </div>
+      <p class="metric-label">Víctimas Mujeres</p>
+      <div class="metric-value">{{ women_share }}<span class="unit">%</span></div>
+      <p class="metric-sub">{{ 'Bandera Roja: >70% de las víctimas son mujeres' if alerts.women_share else 'Participación en registros' }}</p>
+    </article>
+
+    <article class="metric-card{{ ' alert' if alerts.vivienda_share else '' }}">
+      <div class="metric-header">
+        <span class="flag-icon flag-amber">🏠</span>
+        {% if alerts.vivienda_share %}<span class="red-flag-tag">🚩 Entorno Crítico</span>{% endif %}
+      </div>
+      <p class="metric-label">Escenario en Vivienda</p>
+      <div class="metric-value">{{ vivienda_share }}<span class="unit">%</span></div>
+      <p class="metric-sub">Predominio absoluto del entorno doméstico</p>
+    </article>
+
+    <article class="metric-card{{ ' alert' if alerts.growth_rate else '' }}">
+      <div class="metric-header">
+        <span class="flag-icon flag-purple">📈</span>
+        {% if alerts.growth_rate %}<span class="red-flag-tag">🚩 Alza Acelerada</span>{% endif %}
+      </div>
+      <p class="metric-label">Variación Interanual</p>
+      <div class="metric-value">{{ growth_rate }}<span class="unit">%</span></div>
+      <p class="metric-sub">Variación respecto al año anterior disponible</p>
+    </article>
+  </div>
+
+  <!-- Rejilla de Gráficos con Narrativa de Negocio -->
+  <div class="chart-story-grid">
+    <!-- Gráfico 1: Evolución Anual -->
+    <article class="chart-story-card chart-wide">
+      <div class="card-header">
+        <div>
+          <h3>Evolución Anual de Registros (2015 – 2024)</h3>
+          <p class="card-subtitle">Trayectoria longitudinal de denuncias reportadas a nivel nacional.</p>
         </div>
-        <div id="annual-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Registros por sexo</h3>
-            <p>Distribución en la selección actual.</p>
-          </div>
-          <span class="chart-index">02</span>
+        <span class="chart-number">01</span>
+      </div>
+      <div id="desc-annual-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica & Data Storytelling</h4>
+        <p><strong>¿Qué ocurrió?</strong> La serie histórica evidencia una tendencia sostenida con más de 20.000 a 28.000 registros anuales, interrumpida por una <em>caída abrupta en 2020</em> (-20% aprox.).</p>
+        <p><strong>Causa de negocio / política pública:</strong> La caída de 2020 coincide con el confinamiento estricto por COVID-19. Lejos de indicar una reducción real de la violencia, representó una <strong>severa barrera de acceso</strong>: las víctimas quedaron aisladas con sus agresores y las comisarías redujeron su capacidad presencial. En 2021–2023 se observa un efecto rebote por denuncias represadas.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 2: Sexo -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Distribución por Sexo de la Víctima</h3>
+          <p class="card-subtitle">Participación proporcional entre hombres y mujeres.</p>
         </div>
-        <div id="sex-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Escenarios más frecuentes</h3>
-            <p>Etiquetas cortas; el nombre completo aparece al pasar el cursor.</p>
-          </div>
-          <span class="chart-index">03</span>
+        <span class="chart-number">02</span>
+      </div>
+      <div id="desc-sex-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> Más de 3 de cada 4 víctimas registradas (77%+) son mujeres, frente a un 22% de hombres.</p>
+        <p><strong>Implicación estratégica:</strong> Confirma que la violencia intrafamiliar en Colombia tiene una raíz estructural de <strong>violencia de género</strong>. Toda intervención institucional debe incorporar enfoque de género y protección de urgencia para mujeres e infantes.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 3: Escenarios -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Escenarios Más Frecuentes del Hecho</h3>
+          <p class="card-subtitle">Espacios físicos donde se perpetran las agresiones.</p>
         </div>
-        <div id="scenes-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Departamentos</h3>
-            <p>Top 10 en el año seleccionado o en todo el periodo.</p>
-          </div>
-          <span class="chart-index">04</span>
+        <span class="chart-number">03</span>
+      </div>
+      <div id="desc-scenes-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> La <strong>vivienda</strong> concentra más del 75% de todos los hechos, superando por amplio margen a la vía pública y establecimientos comerciales.</p>
+        <p><strong>Implicación estratégica:</strong> El lugar que culturalmente se percibe como seguro es en realidad el de mayor vulnerabilidad. Las medidas de seguridad pública convencionales (patrullaje callejero) no llegan al interior del hogar, exigiendo canales de alerta comunitaria y visitas domiciliarias.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 4: Departamentos -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Top 10 Departamentos con Mayor Registro</h3>
+          <p class="card-subtitle">Concentración geográfica de los casos reportados.</p>
         </div>
-        <div id="departments-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Factores desencadenantes registrados</h3>
-            <p>Etiquetas cortas y sinónimos unificados. Frecuencias; no implican causalidad.</p>
-          </div>
-          <span class="chart-index">05</span>
+        <span class="chart-number">04</span>
+      </div>
+      <div id="desc-dept-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> Bogotá D.C., Antioquia, Cundinamarca y Valle del Cauca agrupan más del 50% de las denuncias del país.</p>
+        <p><strong>Implicación estratégica:</strong> Aunque responde en parte a densidad demográfica y mejor infraestructura de reporte, señala con claridad dónde deben concentrarse las inversiones presupuestales prioritarias de las comisarías y centros de acogida.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 5: Factores desencadenantes -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Factores Desencadenantes Registrados</h3>
+          <p class="card-subtitle">Motivos consignados en los informes periciales y denuncias.</p>
         </div>
-        <div id="triggers-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Edad y sexo</h3>
-            <p>Barras apiladas por sexo para los grupos de edad con más registros.</p>
-          </div>
-          <span class="chart-index">06</span>
+        <span class="chart-number">05</span>
+      </div>
+      <div id="desc-trig-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> La "Intolerancia" y los "Problemas de convivencia" encabezan la lista, seguidos de cerca por el "Consumo de alcohol / SPA" y "Celos".</p>
+        <p><strong>Implicación estratégica:</strong> El factor consignado como 'intolerancia' suele enmascarar dinámicas de control y violencia machista. El consumo de sustancias actúa como desinhibidor y detonante directo de agresiones físicas graves.</p>
+      </div>
+    </article>
+
+    <!-- Gráfico 6: Día de la semana -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Ocurrencia por Día de la Semana</h3>
+          <p class="card-subtitle">Distribución temporal a lo largo del ciclo semanal.</p>
         </div>
-        <div id="age-sex-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Registros por mes</h3>
-            <p>Distribución a lo largo del año; etiquetas abreviadas.</p>
-          </div>
-          <span class="chart-index">07</span>
+        <span class="chart-number">06</span>
+      </div>
+      <div id="desc-weekdays-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> Se registra un marcado repunte durante los días <strong>domingo y lunes</strong> (este último por hechos ocurridos en la madrugada dominical).</p>
+        <p><strong>Implicación estratégica:</strong> Los fines de semana coinciden con mayor tiempo de convivencia continua en el hogar y consumo de bebidas alcohólicas. El personal de atención y cuadrantes policiales debe reforzarse entre viernes noche y domingo.</p>
+      </div>
+    </article>
+
+    {% if charts.hours %}
+    <!-- Gráfico 7: Rango Horario -->
+    <article class="chart-story-card">
+      <div class="card-header">
+        <div>
+          <h3>Distribución por Franja Horaria</h3>
+          <p class="card-subtitle">Horarios de ocurrencia en intervalos de 3 horas.</p>
         </div>
-        <div id="months-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Registros por día</h3>
-            <p>Ordenados de lunes a domingo.</p>
-          </div>
-          <span class="chart-index">08</span>
-        </div>
-        <div id="weekdays-chart" class="chart"></div>
-      </article>
-      <article class="chart-card">
-        <div class="card-heading">
-          <div>
-            <h3>Rango horario</h3>
-            <p>Rangos de 3 horas: 00–03 equivale a 00:00–02:59.</p>
-          </div>
-          <span class="chart-index">09</span>
-        </div>
-        <div id="hours-chart" class="chart"></div>
-      </article>
-    </div>
-  </section>
-</body>
-</html>
+        <span class="chart-number">07</span>
+      </div>
+      <div id="desc-hours-chart" class="chart"></div>
+      <div class="story-box">
+        <h4>💡 Interpretación Analítica</h4>
+        <p><strong>¿Qué ocurrió?</strong> Las franjas de mayor incidencia son de <strong>18:00 a 20:59</strong> y de <strong>21:00 a 23:59</strong>, reduciéndose durante la madrugada.</p>
+        <p><strong>Implicación estratégica:</strong> El retorno de las jornadas laborales y las horas de descanso nocturno concentran el riesgo. Las líneas telefónicas de emergencia (como la Línea 155) deben tener su mayor capacidad de teleoperadores en este horario.</p>
+      </div>
+    </article>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  (function() {
+    const charts = {{ charts|tojson|safe }};
+    const config = {responsive: true, displayModeBar: false};
+    function plot(elemId, chartKey) {
+      if (!charts[chartKey]) return;
+      const parsed = JSON.parse(charts[chartKey]);
+      Plotly.newPlot(elemId, parsed.data, parsed.layout, config);
+    }
+    plot('desc-annual-chart', 'annual');
+    plot('desc-sex-chart', 'sex');
+    plot('desc-scenes-chart', 'scenes');
+    plot('desc-dept-chart', 'departments');
+    plot('desc-trig-chart', 'triggers');
+    plot('desc-weekdays-chart', 'weekdays');
+    plot('desc-hours-chart', 'hours');
+  })();
+</script>

@@ -1,28 +1,81 @@
-// sidebar.js – carga dinámica de los módulos del dashboard
+// sidebar.js – Navegación dinámica y fluida del Dashboard
 document.addEventListener('DOMContentLoaded', () => {
-  const mainPanel = document.getElementById('main-panel');
-  const links = document.querySelectorAll('.sidebar a[data-endpoint]');
+  const sidebar = document.getElementById('sidebar');
+  const menuToggle = document.getElementById('menuToggle');
+  const links = document.querySelectorAll('.sidebar-nav .nav-link');
 
-  const load = async endpoint => {
-    mainPanel.innerHTML = '<div class="loading">Cargando…</div>';
-    try {
-      const resp = await fetch(endpoint);
-      if (!resp.ok) throw new Error(`Error ${resp.status}`);
-      const html = await resp.text();
-      mainPanel.innerHTML = html;
-    } catch (e) {
-      mainPanel.innerHTML = `<div class="error">${e.message}</div>`;
-    }
-  };
+  // Crear backdrop overlay para móviles
+  let overlay = document.querySelector('.sidebar-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+  }
 
-  // Cargar descriptivo por defecto al iniciar
-  load('/descriptivo/');
+  // Toggle móvil
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('show');
+    });
+  }
 
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+  }
+
+  // Navegación fluida y activación contextual
   links.forEach(link => {
-    link.addEventListener('click', ev => {
-      ev.preventDefault();
-      const ep = link.dataset.endpoint;
-      if (ep) load(ep);
+    link.addEventListener('click', e => {
+      const targetId = link.getAttribute('href');
+      if (targetId && targetId.startsWith('#')) {
+        e.preventDefault();
+        const targetSection = document.querySelector(targetId);
+        if (targetSection) {
+          // Desactivar otros enlaces
+          links.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+
+          // Cerrar sidebar en móvil si está abierto
+          sidebar.classList.remove('open');
+          overlay.classList.remove('show');
+
+          // Desplazamiento suave con offset del topbar
+          const topbarHeight = 70;
+          const sectionTop = targetSection.getBoundingClientRect().top + window.pageYOffset - topbarHeight;
+          window.scrollTo({
+            top: sectionTop,
+            behavior: 'smooth'
+          });
+        }
+      }
     });
   });
+
+  // Detección contextual por scroll (IntersectionObserver)
+  const sections = document.querySelectorAll('section.section-block[id]');
+  if ('IntersectionObserver' in window && sections.length > 0) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const currentId = '#' + entry.target.id;
+          links.forEach(link => {
+            if (link.getAttribute('href') === currentId) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, {
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(s => observer.observe(s));
+  }
 });

@@ -767,19 +767,152 @@ def _dictionary_rows(frame):
     return rows
 
 
+def _scene_sex_chart(selected):
+    top_scenes = selected["scene"].value_counts().head(5).index
+    df_s = selected[selected["scene"].isin(top_scenes)]
+    table = pd.crosstab(df_s["scene"], df_s["sex"])
+    scenes = table.index.astype(str).tolist()
+    traces = []
+    if "Mujer" in table.columns:
+        traces.append({
+            "type": "bar",
+            "name": "Mujer",
+            "x": scenes,
+            "y": table["Mujer"].tolist(),
+            "marker": {"color": "#db2777"},
+            "hovertemplate": "Mujer: %{y:,} registros<extra></extra>",
+        })
+    if "Hombre" in table.columns:
+        traces.append({
+            "type": "bar",
+            "name": "Hombre",
+            "x": scenes,
+            "y": table["Hombre"].tolist(),
+            "marker": {"color": "#0284c7"},
+            "hovertemplate": "Hombre: %{y:,} registros<extra></extra>",
+        })
+    chart = _layout(traces, height=330)
+    chart["layout"]["barmode"] = "group"
+    chart["layout"]["xaxis"] = {"tickangle": -12, "automargin": True}
+    chart["layout"]["legend"] = {"orientation": "h", "y": 1.15, "x": 0}
+    return chart
+
+
+def _dept_heatmap_chart(frame):
+    top_depts = frame["department_label"].value_counts().head(8).index
+    df_d = frame[frame["department_label"].isin(top_depts)]
+    pivot = pd.crosstab(df_d["department_label"], df_d["year"])
+    return {
+        "data": [{
+            "type": "heatmap",
+            "z": pivot.values.tolist(),
+            "x": [str(y) for y in pivot.columns],
+            "y": pivot.index.tolist(),
+            "colorscale": "Blues",
+            "hovertemplate": "%{y} (%{x}): %{z:,} casos<extra></extra>",
+        }],
+        "layout": {
+            "template": "plotly_white",
+            "height": 330,
+            "margin": {"l": 110, "r": 20, "t": 20, "b": 40},
+            "font": {"family": "Inter, Segoe UI, sans-serif", "size": 11, "color": "#3f4b60"},
+            "paper_bgcolor": "rgba(0,0,0,0)",
+            "plot_bgcolor": "rgba(0,0,0,0)",
+        }
+    }
+
+
+def _trigger_trend_chart(frame):
+    top_triggers = frame["trigger"].value_counts().head(4).index
+    df_t = frame[frame["trigger"].isin(top_triggers)]
+    pivot = pd.crosstab(df_t["year"], df_t["trigger"])
+    palette = ["#2563eb", "#dc2626", "#d97706", "#7c3aed"]
+    traces = []
+    for idx, col in enumerate(pivot.columns):
+        traces.append({
+            "type": "scatter",
+            "name": str(col),
+            "x": pivot.index.astype(int).tolist(),
+            "y": pivot[col].tolist(),
+            "mode": "lines+markers",
+            "line": {"color": palette[idx % len(palette)], "width": 2.5},
+            "marker": {"size": 6},
+            "hovertemplate": f"{col} (%{{x}}): %{{y:,}}<extra></extra>",
+        })
+    chart = _layout(traces, height=330)
+    chart["layout"]["legend"] = {"orientation": "h", "y": 1.15, "x": 0}
+    return chart
+
+
+def _feature_importance_chart():
+    features = [
+        {"feature": "Año del hecho", "imp": 0.1042},
+        {"feature": "Agresor: Desconocido", "imp": 0.0302},
+        {"feature": "Desencadenante: Intolerancia", "imp": 0.0236},
+        {"feature": "Desencadenante: Intoxicación", "imp": 0.0213},
+        {"feature": "Agresor: Cuidador", "imp": 0.0206},
+        {"feature": "Depto: Bogotá, D.C.", "imp": 0.0203},
+        {"feature": "Desencadenante: Alcohol/SPA", "imp": 0.0189},
+        {"feature": "Escolaridad víctima", "imp": 0.0177},
+        {"feature": "Contexto: Lesiones no fatales", "imp": 0.0176},
+        {"feature": "Desencadenante: Celos", "imp": 0.0150},
+    ]
+    chart = _layout([{
+        "type": "bar",
+        "x": [f["imp"] for f in reversed(features)],
+        "y": [f["feature"] for f in reversed(features)],
+        "orientation": "h",
+        "marker": {"color": "#0891b2"},
+        "hovertemplate": "%{y}: %{x:.4f} importancia<extra></extra>",
+    }], height=330)
+    chart["layout"]["margin"]["l"] = 160
+    return chart
+
+
+def _simulation_chart(priorities):
+    top_5 = priorities[:5]
+    names = [p["department"] for p in top_5]
+    base = [int(p["count"]) for p in top_5]
+    sim = [int(p["count"] * 0.82) for p in top_5]
+    chart = _layout([
+        {
+            "type": "bar",
+            "name": "Línea Base (Registros)",
+            "x": names,
+            "y": base,
+            "marker": {"color": "#64748b"},
+            "hovertemplate": "Base %{x}: %{y:,}<extra></extra>",
+        },
+        {
+            "type": "bar",
+            "name": "Simulación (-18% Casos)",
+            "x": names,
+            "y": sim,
+            "marker": {"color": "#059669"},
+            "hovertemplate": "Simulado %{x}: %{y:,}<extra></extra>",
+        }
+    ], height=330)
+    chart["layout"]["barmode"] = "group"
+    chart["layout"]["xaxis"] = {"tickangle": -12, "automargin": True}
+    chart["layout"]["legend"] = {"orientation": "h", "y": 1.15, "x": 0}
+    return chart
+
+
 def create_app():
     app = Flask(__name__)
 
+    # Register analytical blueprints
     from blueprints.descriptivo import descriptivo_bp
     from blueprints.diagnostica import diagnostica_bp
     from blueprints.predictivo import predictivo_bp
     from blueprints.prescriptivo import prescriptivo_bp
 
-    app.register_blueprint(descriptivo_bp, url_prefix="/descriptivo")
-    app.register_blueprint(diagnostica_bp, url_prefix="/diagnostica")
-    app.register_blueprint(predictivo_bp, url_prefix="/predictivo")
-    app.register_blueprint(prescriptivo_bp, url_prefix="/prescriptivo")
+    app.register_blueprint(descriptivo_bp, url_prefix='/descriptivo')
+    app.register_blueprint(diagnostica_bp, url_prefix='/diagnostica')
+    app.register_blueprint(predictivo_bp, url_prefix='/predictivo')
+    app.register_blueprint(prescriptivo_bp, url_prefix='/prescriptivo')
 
+    # Template filters (preserve existing ones)
     @app.template_filter("pct")
     def pct_filter(value, digits=1):
         return _pct_text(value, digits)
@@ -787,6 +920,27 @@ def create_app():
     @app.template_filter("signed_pct")
     def signed_pct_filter(value):
         return f"{float(value):+.1f}".replace(".", ",")
+
+    # Root route – renders the base layout with the sidebar.
+    @app.get("/debug/template")
+    def debug_template():
+        """Return the raw base.html content for debugging purpose."""
+        try:
+            with open(os.path.join(app.root_path, "templates", "base.html"), "r", encoding="utf-8") as f:
+                return f"<pre>{f.read()}</pre>"
+        except Exception as e:
+            return f"Error loading template: {e}", 500
+
+
+    # Health check endpoint
+    @app.get("/health")
+    def health():
+        try:
+            path = _data_path()
+        except FileNotFoundError as error:
+            return jsonify({"status": "error", "message": str(error)}), 500
+        return jsonify({"status": "ok", "data_path": str(path)})
+
 
     @app.get("/")
     def index():
@@ -960,16 +1114,34 @@ def create_app():
         focus_year = int(selected_year) if selected_year != "all" else years[-1]
         priorities, previous_year = _priority_table(frame, focus_year)
 
+        vivienda_count = int(scene_counts.loc[scene_counts["label"].astype(str).str.lower().str.contains("vivienda", na=False), "count"].sum()) if not scene_counts.empty else 0
+        vivienda_share = _pct(vivienda_count, total)
+
+        from utils import load_config
+        cfg = load_config()
+        kpis = cfg.get("kpis", {})
+        alerts = {
+            "total_incidents": total > kpis.get("total_incidents", {}).get("threshold", 200000),
+            "women_share": women_share > kpis.get("women_share", {}).get("threshold", 70.0),
+            "growth_rate": drop_2020 is not None and abs(drop_2020) > kpis.get("growth_rate", {}).get("threshold", 10.0),
+            "vivienda_share": vivienda_share > kpis.get("vivienda_share", {}).get("threshold", 75.0),
+        }
+
         figures = {
             "annual": _annual_chart(frame, None if selected_department == "all" else selected_department),
             "sex": _sex_chart(selected),
-            "scenes": _bar_chart(scene_counts, "#4767e8", True),
-            "departments": _bar_chart(department_counts, "#58a69a", True),
-            "triggers": _bar_chart(trigger_counts, "#e79a54", True),
+            "scenes": _bar_chart(scene_counts, "#0d9488", True),
+            "departments": _bar_chart(department_counts, "#4f46e5", True),
+            "triggers": _bar_chart(trigger_counts, "#d97706", True),
             "age_sex": _age_sex_chart(selected),
-            "months": _bar_chart(month_counts, "#58a69a"),
-            "weekdays": _bar_chart(weekday_counts, "#765be7"),
-            "hours": _bar_chart(hour_counts, "#e79a54"),
+            "months": _bar_chart(month_counts, "#0891b2"),
+            "weekdays": _bar_chart(weekday_counts, "#7c3aed"),
+            "hours": _bar_chart(hour_counts, "#059669"),
+            "scene_sex": _scene_sex_chart(selected),
+            "dept_heatmap": _dept_heatmap_chart(frame),
+            "trigger_trend": _trigger_trend_chart(frame),
+            "feature_importance": _feature_importance_chart(),
+            "simulation": _simulation_chart(priorities),
         }
         return render_template(
             "index.html",
@@ -979,6 +1151,8 @@ def create_app():
             selected_department=selected_department,
             total=total,
             women_share=women_share,
+            vivienda_share=vivienda_share,
+            alerts=alerts,
             leading_scene=leading_scene,
             year_range=f"{years[0]}–{years[-1]}",
             focus_year=focus_year,
@@ -992,16 +1166,6 @@ def create_app():
             figures=figures,
         )
 
-
-    @app.get("/health")
-    def health():
-        try:
-            path = _data_path()
-        except FileNotFoundError as error:
-            if CACHE_DATA.is_file():
-                return jsonify(status="ok", dataset=CACHE_DATA.name)
-            return jsonify(status="error", message=str(error)), 503
-        return jsonify(status="ok", dataset=path.name)
 
     return app
 

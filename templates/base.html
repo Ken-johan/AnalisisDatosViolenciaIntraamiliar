@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="es">
 <head>
@@ -13,7 +14,7 @@
   <!-- ───── Sidebar ───── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <span class="brand-icon">🟠</span>
+      <span class="brand-icon">{{ icon('observatory') }}</span>
       <div>
         <strong>Observatorio VIF</strong>
         <small>Colombia 2015 – 2024</small>
@@ -23,22 +24,22 @@
     <nav class="sidebar-nav">
       <p class="nav-label">MÓDULOS ANALÍTICOS</p>
       <a href="#" class="nav-link active" data-endpoint="/descriptivo/">
-        <span class="nav-icon">📊</span>
+        <span class="nav-icon">{{ icon('chart') }}</span>
         <span class="nav-text">Descriptivo</span>
         <span class="nav-badge">¿Qué pasó?</span>
       </a>
       <a href="#" class="nav-link" data-endpoint="/diagnostica/">
-        <span class="nav-icon">🔍</span>
+        <span class="nav-icon">{{ icon('search') }}</span>
         <span class="nav-text">Diagnóstico</span>
         <span class="nav-badge">¿Por qué?</span>
       </a>
       <a href="#" class="nav-link" data-endpoint="/predictivo/">
-        <span class="nav-icon">🤖</span>
+        <span class="nav-icon">{{ icon('robot') }}</span>
         <span class="nav-text">Predictivo</span>
         <span class="nav-badge">Modelos</span>
       </a>
       <a href="#" class="nav-link" data-endpoint="/prescriptivo/">
-        <span class="nav-icon">🎯</span>
+        <span class="nav-icon">{{ icon('target') }}</span>
         <span class="nav-text">Prescriptivo</span>
         <span class="nav-badge">Acciones</span>
       </a>
@@ -53,7 +54,7 @@
   <!-- ───── Main Content ───── -->
   <div class="main-wrapper">
     <header class="topbar">
-      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">{{ icon('menu') }}</button>
       <div class="topbar-title">
         <h1>Dashboard Analítico</h1>
         <span class="topbar-subtitle">Violencia Intrafamiliar · Colombia</span>

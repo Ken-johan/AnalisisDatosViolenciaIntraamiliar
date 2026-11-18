@@ -740,6 +740,7 @@ a {
 .action-icon {
   font-size: 24px;
   margin-bottom: 8px;
+  color: var(--orange-600);
 }
 
 .action-actor {
@@ -980,4 +981,52 @@ footer {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* ─── Iconos SVG inline (en reemplazo de emojis) ─── */
+.ui-icon {
+  flex: none;
+  stroke: currentColor;
+}
+
+.nav-icon .ui-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.brand-badge .ui-icon,
+.brand-icon .ui-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  color: #ffffff;
+}
+
+.flag-icon .ui-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.red-flag-tag .ui-icon {
+  width: 11px;
+  height: 11px;
+  vertical-align: -0.14em;
+}
+
+.action-icon .ui-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+
+h4 .ui-icon {
+  margin-right: 6px;
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.filter-btn .ui-icon {
+  margin-left: 6px;
 }

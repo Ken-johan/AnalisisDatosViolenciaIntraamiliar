@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!-- Módulo 3: Analítica Predictiva (Modelos / Proyecciones) -->
 <section id="predictivo" class="section-block">
   <div class="section-heading">
@@ -11,7 +12,7 @@
   <!-- Alerta Técnica Metodológica: Paradoja de la Exactitud -->
   <aside class="model-paradox-card">
     <div class="paradox-header">
-      <span class="flag-icon flag-purple">⚠️</span>
+      <span class="flag-icon flag-purple">{{ icon('alert') }}</span>
       <div>
         <h3>Rigor Metodológico: La Paradoja de la Exactitud (Accuracy Paradox)</h3>
         <p>En problemas con <strong>fuerte desbalance de clases</strong> (donde la clase "Vivienda" representa ~75% del total), la métrica tradicional de <em>Accuracy</em> resulta completamente engañosa.</p>
@@ -36,7 +37,7 @@
       </div>
       <div id="pred-models-comparison" class="chart"></div>
       <div class="story-box">
-        <h4>🤖 Interpretación Técnica del Modelado</h4>
+        <h4>{{ icon('robot') }} Interpretación Técnica del Modelado</h4>
         <p><strong>Mejor modelo global:</strong> La <strong>Regresión Logística</strong> superó a los demás algoritmos alcanzando el mayor <strong>F1-Score Macro (10,42%)</strong> y una Exactitud Balanceada de <strong>34,46%</strong>, permitiendo clasificar de manera más equilibrada escenarios alternativos como vía pública, hospedajes y comercios.</p>
         <p><strong>Random Forest:</strong> Alcanzó una exactitud balanceada similar (34,28%) y F1-Macro de 8,71%, pero requirió considerablemente mayor costo computacional de entrenamiento.</p>
       </div>
@@ -53,7 +54,7 @@
       </div>
       <div id="pred-feature-importance" class="chart"></div>
       <div class="story-box">
-        <h4>🤖 Interpretación de las Variables Más Predictivas</h4>
+        <h4>{{ icon('robot') }} Interpretación de las Variables Más Predictivas</h4>
         <p><strong>Variables dominantes:</strong> El <em>Año del hecho (10,4%)</em> es la variable de mayor peso, capturando las transformaciones estructurales del registro antes, durante y después de la pandemia. Le siguen la relación con el <em>Presunto Agresor</em> (desconocido vs conviviente), el <em>Factor Desencadenante (intolerancia, intoxicación, alcohol)</em> y el <em>Departamento</em>.</p>
         <p><strong>Aplicación práctica:</strong> Cuando la agresión es cometida por una persona externa o bajo estado de intoxicación severa, la probabilidad de que el hecho ocurra en vía pública o establecimiento comercial aumenta notablemente respecto a la vivienda habitual.</p>
       </div>

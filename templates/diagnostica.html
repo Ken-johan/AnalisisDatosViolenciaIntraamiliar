@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!-- Módulo 2: Analítica Diagnóstica (¿Por qué pasó?) -->
 <section id="diagnostica" class="section-block">
   <div class="section-heading">
@@ -12,7 +13,7 @@
   <div class="metric-grid">
     <article class="metric-card alert">
       <div class="metric-header">
-        <span class="flag-icon flag-red">⚠️</span>
+        <span class="flag-icon flag-red">{{ icon('alert') }}</span>
         <span class="red-flag-tag">Diagnóstico Raíz</span>
       </div>
       <p class="metric-label">Espacio Privado como Trampa</p>
@@ -22,7 +23,7 @@
 
     <article class="metric-card alert">
       <div class="metric-header">
-        <span class="flag-icon flag-pink">♀</span>
+        <span class="flag-icon flag-pink">{{ icon('venus') }}</span>
         <span class="red-flag-tag">Vulnerabilidad de Género</span>
       </div>
       <p class="metric-label">Asimetría de Poder</p>
@@ -32,7 +33,7 @@
 
     <article class="metric-card">
       <div class="metric-header">
-        <span class="flag-icon flag-amber">⚡</span>
+        <span class="flag-icon flag-amber">{{ icon('bolt') }}</span>
       </div>
       <p class="metric-label">Catalizador Químico</p>
       <div class="metric-value">Alcohol / SPA</div>
@@ -41,7 +42,7 @@
 
     <article class="metric-card">
       <div class="metric-header">
-        <span class="flag-icon flag-blue">🗺️</span>
+        <span class="flag-icon flag-blue">{{ icon('map') }}</span>
       </div>
       <p class="metric-label">Focos Urbanos Críticos</p>
       <div class="metric-value">Top 4 Depts</div>
@@ -62,7 +63,7 @@
       </div>
       <div id="diag-scene-sex-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🔍 ¿Por qué ocurre este patrón?</h4>
+        <h4>{{ icon('search') }} ¿Por qué ocurre este patrón?</h4>
         <p><strong>Hallazgo diagnóstico:</strong> Dentro de la <em>Vivienda</em>, la brecha de género es máxima: más del 80% de las víctimas son mujeres. En contraste, en la <em>Vía Pública</em> y establecimientos comerciales, la proporción de víctimas masculinas aumenta sensiblemente.</p>
         <p><strong>Causa explicativa:</strong> Esto diagnostica que la violencia contra la mujer es predominantemente <strong>doméstica, íntima y oculta</strong>, facilitada por relaciones de dependencia económica o emocional. La violencia hacia los hombres suele vincularse a riñas en espacios públicos o disputas familiares externas.</p>
       </div>
@@ -79,7 +80,7 @@
       </div>
       <div id="diag-dept-heatmap-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🔍 ¿Por qué se concentra territorialmente?</h4>
+        <h4>{{ icon('search') }} ¿Por qué se concentra territorialmente?</h4>
         <p><strong>Hallazgo diagnóstico:</strong> Los colores más oscuros corresponden permanentemente a <em>Bogotá D.C., Antioquia y Valle del Cauca</em> año tras año, sin registrar descensos estructurales significativos fuera del año pandémico 2020.</p>
         <p><strong>Causa explicativa:</strong> En los grandes centros urbanos convergen alta densidad poblacional, mayor cobertura institucional de denuncia (CAI, URI, Comisarías) y factores de estrés urbano (hacinamiento, precariedad laboral). En zonas rurales, el subregistro persiste por barreras geográficas para denunciar.</p>
       </div>
@@ -96,7 +97,7 @@
       </div>
       <div id="diag-trigger-trend-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🔍 ¿Por qué lideran la intolerancia y el alcohol?</h4>
+        <h4>{{ icon('search') }} ¿Por qué lideran la intolerancia y el alcohol?</h4>
         <p><strong>Hallazgo diagnóstico:</strong> La curva de "Intolerancia" se mantiene como el factor dominante, mientras que el "Consumo de Alcohol y Sustancias Psicoactivas" muestra correlaciones directas con agresiones que requieren atención médica urgente.</p>
         <p><strong>Causa explicativa:</strong> La intolerancia refleja <strong>escasas herramientas de resolución no violenta de conflictos</strong> en el núcleo familiar. El alcohol opera como un acelerador que transforma discusiones verbales en lesiones físicas no fatales.</p>
       </div>
@@ -114,7 +115,7 @@
       </div>
       <div id="diag-time-heatmap-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🔍 ¿Por qué fines de semana y noches?</h4>
+        <h4>{{ icon('search') }} ¿Por qué fines de semana y noches?</h4>
         <p><strong>Hallazgo diagnóstico:</strong> El cuadrante más denso se sitúa los sábados y domingos entre las 18:00 y las 23:59 horas.</p>
         <p><strong>Causa explicativa:</strong> Estas ventanas concentran el tiempo de ocio, consumo recreativo de alcohol y contacto prolongado entre miembros del hogar, sin la supervisión del entorno laboral o escolar. Diagnostica la necesidad de turnos nocturnos obligatorios en comisarías de familia.</p>
       </div>

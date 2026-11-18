@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!-- Módulo 4: Analítica Prescriptiva (Simulación / Optimización / Priorización) -->
 <section id="prescriptivo" class="section-block">
   <div class="section-heading">
@@ -21,7 +22,7 @@
       </div>
       <div id="pres-simulation-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🎯 Simulación Prescriptiva (Análisis What-If)</h4>
+        <h4>{{ icon('target') }} Simulación Prescriptiva (Análisis What-If)</h4>
         <p><strong>Hipótesis de intervención:</strong> Despliegue de cuadrantes de mediación comunitaria en fines de semana y activación de alertas tempranas por consumo problemático de alcohol/SPA.</p>
         <p><strong>Resultado estimado:</strong> Una reducción proyectada del <strong>18% en los hechos ocurridos en vivienda</strong> en los 5 territorios de mayor carga permitiría evitar miles de lesiones físicas graves al año, descongestionando además las comisarías y salas de urgencias hospitalarias.</p>
       </div>
@@ -38,7 +39,7 @@
       </div>
       <div id="pres-attention-chart" class="chart"></div>
       <div class="story-box">
-        <h4>🎯 Estrategia de Asignación de Recursos</h4>
+        <h4>{{ icon('target') }} Estrategia de Asignación de Recursos</h4>
         <p><strong>Criterio de optimización:</strong> El gasto público debe abandonar esquemas de asignación homogénea y migrar hacia <em>presupuesto focalizado por riesgo</em>. Los departamentos en alerta crítica requieren inyección de defensores de familia adicionales y centros de acogida 24/7.</p>
       </div>
     </article>
@@ -97,7 +98,7 @@
   <!-- Matriz de Toma de Decisiones por Actor Institucional -->
   <div class="action-grid">
     <article class="action-card">
-      <span class="action-icon">⚖️</span>
+      <span class="action-icon">{{ icon('scale') }}</span>
       <p class="action-actor">Comisarías de Familia</p>
       <h4>Ampliación de Cobertura & Alertas Tempranas</h4>
       <ul>
@@ -108,7 +109,7 @@
     </article>
 
     <article class="action-card">
-      <span class="action-icon">👮</span>
+      <span class="action-icon">{{ icon('shield-check') }}</span>
       <p class="action-actor">Policía Nacional & Cuadrantes</p>
       <h4>Intervención en Flagrancia & Puntos Calientes</h4>
       <ul>
@@ -119,7 +120,7 @@
     </article>
 
     <article class="action-card">
-      <span class="action-icon">🏛️</span>
+      <span class="action-icon">{{ icon('institution') }}</span>
       <p class="action-actor">Alcaldías & Gobernaciones</p>
       <h4>Políticas Preventivas & Control de SPA</h4>
       <ul>
